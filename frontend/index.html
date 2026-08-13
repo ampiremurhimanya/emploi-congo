@@ -19,8 +19,8 @@
         <a href="index.html" class="nav-link active" data-i18n="findJobs"
           >Trouver un emploi</a
         >
-        <a href="login.html" class="nav-link" data-i18n="myApplications"
-          >Mes candidatures</a
+        <a href="find-jobs.html" class="nav-link" data-i18n="findJobs"
+          >Offres</a
         >
         <a
           href="register.html?role=COMPANY"
@@ -35,7 +35,10 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero-content">
-        <h1 data-i18n="heroTitle">Votre carrière <span>commence ici</span></h1>
+        <h1>
+          Votre carrière
+          <span data-i18n="heroTitleHighlight">commence ici</span>
+        </h1>
         <p data-i18n="heroSubtitle">
           Connecter les talents congolais avec les meilleures opportunités
           locales et internationales.
@@ -49,7 +52,7 @@
             placeholder="Titre du poste, mots-clés..."
           />
           <select id="heroField" class="form-select" style="max-width: 220px">
-            <option value="" data-i18n="fields.all">Tous les domaines</option>
+            <option value="">Tous les domaines</option>
             <option value="Informatique & Développement">
               💻 Informatique & Dev
             </option>
@@ -80,55 +83,61 @@
 
     <!-- STATS -->
     <section class="stats-banner">
-      <div class="container">
-        <div class="d-flex flex-wrap justify-between" style="gap: 2rem">
-          <div class="stat-item">
-            <div class="stat-number" id="statOpps">—</div>
-            <div class="stat-label" data-i18n="activeOpportunities">
-              Offres actives
-            </div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="statOpps">—</div>
+          <div class="stat-label" data-i18n="activeOpportunities">
+            Offres actives
           </div>
-          <div class="stat-item">
-            <div class="stat-number" id="statCompanies">—</div>
-            <div class="stat-label" data-i18n="partnerCompanies">
-              Sociétés partenaires
-            </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statCompanies">—</div>
+          <div class="stat-label" data-i18n="partnerCompanies">
+            Sociétés partenaires
           </div>
-          <div class="stat-item">
-            <div class="stat-number" id="statStudents">—</div>
-            <div class="stat-label" data-i18n="registeredStudents">
-              Étudiants inscrits
-            </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statStudents">—</div>
+          <div class="stat-label" data-i18n="registeredStudents">
+            Étudiants inscrits
           </div>
         </div>
       </div>
     </section>
 
     <!-- LATEST OPPORTUNITIES -->
-    <section class="section container">
-      <div class="d-flex justify-between align-center mb-3">
-        <div>
-          <h2 class="section-title" data-i18n="latestOpportunities">
-            Dernières opportunités
-          </h2>
-          <p class="section-sub" data-i18n="latestSubtitle">
-            Offres vérifiées et publiées par notre équipe.
-          </p>
-        </div>
-        <a
-          href="find-jobs.html"
-          class="btn btn-outline-dark"
-          data-i18n="viewAll"
-          >Voir tout →</a
+    <section class="section">
+      <div class="container">
+        <div
+          class="d-flex justify-between align-center mb-3"
+          style="flex-wrap: wrap; gap: 1rem"
         >
+          <div>
+            <h2 class="section-title" data-i18n="latestOpportunities">
+              Dernières opportunités
+            </h2>
+            <p class="section-sub" data-i18n="latestSubtitle">
+              Offres vérifiées publiées par notre équipe.
+            </p>
+          </div>
+          <a
+            href="find-jobs.html"
+            class="btn btn-outline-dark"
+            data-i18n="viewAll"
+            >Voir tout →</a
+          >
+        </div>
+        <div id="latestList"><div class="spinner"></div></div>
       </div>
-      <div id="latestList"><div class="spinner"></div></div>
     </section>
 
     <!-- ROLE CARDS -->
-    <section class="section" style="background: #fff">
+    <section
+      class="section"
+      style="background: #fff; padding-top: 3rem; padding-bottom: 3rem"
+    >
       <div class="container">
-        <h2 class="section-title text-center" data-i18n="tailoredTitle">
+        <h2 class="section-title text-center mb-2" data-i18n="tailoredTitle">
           Une plateforme pour tous
         </h2>
         <p class="section-sub text-center" data-i18n="tailoredSubtitle">
@@ -141,16 +150,17 @@
               Pour les étudiants
             </h5>
             <ul
-              style="list-style: none; color: var(--muted); font-size: 0.9rem"
               id="studentFeatures"
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
             ></ul>
             <div class="mt-3">
               <a
                 href="register.html?role=STUDENT"
                 class="btn btn-navy btn-block"
                 data-i18n="getStarted"
-                >Commencer</a
               >
+                Commencer
+              </a>
             </div>
           </div>
           <div class="card card-body" style="border: 2px solid var(--gold)">
@@ -159,16 +169,17 @@
               Pour les entreprises & ONG
             </h5>
             <ul
-              style="list-style: none; color: var(--muted); font-size: 0.9rem"
               id="companyFeatures"
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
             ></ul>
             <div class="mt-3">
               <a
                 href="register.html?role=COMPANY"
                 class="btn btn-gold btn-block"
                 data-i18n="postOpening"
-                >Publier une offre</a
               >
+                Publier une offre
+              </a>
             </div>
           </div>
           <div class="card card-body">
@@ -177,16 +188,17 @@
               Pour l'administration
             </h5>
             <ul
-              style="list-style: none; color: var(--muted); font-size: 0.9rem"
               id="adminFeatures"
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
             ></ul>
             <div class="mt-3">
               <a
                 href="login.html"
                 class="btn btn-outline-dark btn-block"
                 data-i18n="adminDashboard"
-                >Tableau de bord</a
               >
+                Tableau de bord admin
+              </a>
             </div>
           </div>
         </div>
@@ -194,29 +206,29 @@
     </section>
 
     <!-- CTA -->
-    <section class="section container">
-      <div class="cta-section">
-        <h2 data-i18n="ctaTitle">Prêt à faire le grand saut ?</h2>
-        <p data-i18n="ctaSubtitle">
-          Rejoignez des milliers d'étudiants et d'entreprises qui façonnent
-          l'avenir du Congo.
-        </p>
-        <div
-          class="d-flex gap-2"
-          style="justify-content: center; flex-wrap: wrap"
-        >
-          <a
-            href="register.html"
-            class="btn btn-gold btn-lg"
-            data-i18n="createAccount"
-            >Créer un compte</a
-          >
-          <a
-            href="mailto:contact@emploicongo.cd"
-            class="btn btn-outline-light btn-lg"
-            data-i18n="contactUs"
-            >Nous contacter</a
-          >
+    <section class="section">
+      <div class="container">
+        <div class="cta-section">
+          <h2 data-i18n="ctaTitle">Prêt à faire le grand saut ?</h2>
+          <p data-i18n="ctaSubtitle">
+            Rejoignez des milliers d'étudiants et d'entreprises qui façonnent
+            l'avenir du Congo.
+          </p>
+          <div class="d-flex gap-2 justify-center flex-wrap">
+            <a
+              href="register.html"
+              class="btn btn-gold btn-lg"
+              data-i18n="createAccount"
+              >Créer un compte</a
+            >
+            <a
+              href="mailto:contact@emploicongo.cd"
+              class="btn btn-outline-light btn-lg"
+              data-i18n="contactUs"
+            >
+              Nous contacter
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -224,7 +236,7 @@
     <!-- FOOTER -->
     <footer class="footer">
       <div
-        class="container d-flex flex-wrap justify-between align-center"
+        class="container d-flex justify-between align-center flex-wrap"
         style="gap: 1rem"
       >
         <div>
@@ -244,6 +256,7 @@
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
     <script>
+      // Init language
       Lang.init();
 
       // Load stats
@@ -262,42 +275,55 @@
       Api.get("/opportunities/public/latest?limit=6")
         .then((list) => {
           const el = document.getElementById("latestList");
-          if (!list.length) {
-            el.innerHTML = `<div class="empty-state">Aucune opportunité disponible pour le moment.</div>`;
+          if (!list || list.length === 0) {
+            el.innerHTML = emptyState(
+              "Aucune opportunité disponible pour le moment.",
+            );
             return;
           }
-          el.innerHTML = list
-            .map(
-              (o) => `
-      <div class="opp-card mb-2 d-flex justify-between align-center flex-wrap" style="gap:1rem;">
-        <div class="d-flex gap-2 align-center">
-          <div class="company-logo">${escapeHtml((o.company_name || "?")[0])}</div>
-          <div>
-            <div class="fw-bold">${escapeHtml(o.title)}</div>
-            <div class="text-muted text-small">${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}</div>
+          el.innerHTML =
+            `<div style="display:flex;flex-direction:column;gap:0.75rem;">` +
+            list
+              .map(
+                (o) => `
+        <div class="opp-card">
+          <div class="d-flex gap-2 align-center">
+            <div class="company-logo">${escapeHtml((o.company_name || "?")[0].toUpperCase())}</div>
+            <div>
+              <div class="fw-bold mb-1">${escapeHtml(o.title)}</div>
+              <div class="text-muted text-small">
+                ${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}
+              </div>
+              <div class="text-small mt-1" style="color:var(--muted);">
+                <span data-i18n="deadline">Date limite</span>: ${formatDate(o.application_deadline)}
+              </div>
+            </div>
+          </div>
+          <div class="d-flex gap-2 align-center flex-wrap">
+            <span class="badge-status badge-approved">Approuvée</span>
+            <a href="find-jobs.html" class="btn btn-navy btn-sm" data-i18n="applyNow">Postuler</a>
           </div>
         </div>
-        <div class="d-flex gap-2 align-center flex-wrap">
-          <span class="text-small text-muted">${formatDate(o.application_deadline)}</span>
-          <span class="badge-status badge-approved">Approuvée</span>
-          <a href="find-jobs.html" class="btn btn-navy btn-sm" data-i18n="applyNow">Postuler</a>
-        </div>
-      </div>
-    `,
-            )
-            .join("");
+      `,
+              )
+              .join("") +
+            `</div>`;
         })
         .catch(() => {
-          document.getElementById("latestList").innerHTML =
-            `<div class="empty-state">Impossible de charger les offres.</div>`;
+          document.getElementById("latestList").innerHTML = emptyState(
+            "Impossible de charger les offres. Vérifiez que le serveur est démarré.",
+          );
         });
 
-      // Role card features
+      // Fill role card features
       function fillFeatures(id, key) {
         const items = Lang.t(key);
         if (Array.isArray(items)) {
           document.getElementById(id).innerHTML = items
-            .map((f) => `<li style="padding:0.3rem 0;">✓ ${f}</li>`)
+            .map(
+              (f) =>
+                `<li style="padding:0.3rem 0;display:flex;align-items:flex-start;gap:0.5rem;"><span style="color:var(--success);font-weight:800;">✓</span>${escapeHtml(f)}</li>`,
+            )
             .join("");
         }
       }
@@ -305,13 +331,14 @@
       fillFeatures("companyFeatures", "forCompaniesDesc");
       fillFeatures("adminFeatures", "forAdminDesc");
 
+      // Search
       function doSearch() {
-        const k = document.getElementById("heroKeyword").value.trim();
-        const f = document.getElementById("heroField").value;
-        const p = new URLSearchParams();
-        if (k) p.set("keyword", k);
-        if (f) p.set("field", f);
-        window.location.href = "find-jobs.html?" + p.toString();
+        const keyword = document.getElementById("heroKeyword").value.trim();
+        const field = document.getElementById("heroField").value;
+        const params = new URLSearchParams();
+        if (keyword) params.set("keyword", keyword);
+        if (field) params.set("field", field);
+        window.location.href = "find-jobs.html?" + params.toString();
       }
 
       document

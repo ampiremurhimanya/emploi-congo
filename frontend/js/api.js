@@ -44,13 +44,18 @@ const Api = {
     const opts = { method, headers };
     if (body) opts.body = isForm ? body : JSON.stringify(body);
 
-    const res = await fetch(API_BASE + path, opts);
-
-    if (res.status === 401) { this.logout(); return; }
-
-    const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(data?.message || 'Erreur serveur.');
-    return data;
+    try {
+      const res = await fetch(API_BASE + path, opts);
+      if (res.status === 401) { this.logout(); return; }
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.message || 'Erreur serveur.');
+      return data;
+    } catch (err) {
+      if (err.message.includes('fetch')) {
+        throw new Error('Impossible de contacter le serveur. Vérifiez que le backend est démarré.');
+      }
+      throw err;
+    }
   },
 
   get: (path) => Api.request('GET', path),
@@ -59,65 +64,102 @@ const Api = {
   postForm: (path, form) => Api.request('POST', path, form, true)
 };
 
-// ── Toast notifications ──────────────────────────────────────
+// ── Notifications ─────────────────────────────
 function showToast(message, type = 'success') {
   let container = document.getElementById('toastContainer');
   if (!container) {
     container = document.createElement('div');
     container.id = 'toastContainer';
-    container.style.cssText = 'position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;';
+    container.style.cssText = `
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+    `;
     document.body.appendChild(container);
   }
-  const colors = {
-    success: '#15803d',
-    error: '#b91c1c',
-    info: '#1d4ed8'
-  };
-  const icons = { success: '✅', error: '⚠️', info: 'ℹ️' };
+
+  const config = {
+    success: { bg: '#15803d', icon: '✅' },
+    error:   { bg: '#b91c1c', icon: '⚠️' },
+    info:    { bg: '#1d4ed8', icon: 'ℹ️' }
+  }[type] || { bg: '#374151', icon: 'ℹ️' };
+
   const toast = document.createElement('div');
   toast.style.cssText = `
-    background:${colors[type] || colors.info};
-    color:#fff;
-    padding:14px 18px;
-    border-radius:12px;
-    font-weight:600;
-    font-size:0.92rem;
-    box-shadow:0 8px 24px rgba(0,0,0,0.18);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:280px;
-    max-width:380px;
-    animation:slideIn 0.25s ease-out;
+    background: ${config.bg};
+    color: white;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.25s ease-out;
+    cursor: pointer;
   `;
-  toast.innerHTML = `<span style="font-size:1.1rem">${icons[type]||'ℹ️'}</span><span style="flex:1">${message}</span><span style="cursor:pointer;opacity:0.8" onclick="this.parentElement.remove()">✕</span>`;
+  toast.innerHTML = `
+    <span style="font-size:1.2rem">${config.icon}</span>
+    <span style="flex:1">${escapeHtml(message)}</span>
+    <span style="opacity:0.7;font-size:1.1rem" onclick="this.parentElement.remove()">✕</span>
+  `;
   container.appendChild(toast);
-  setTimeout(() => toast.remove(), type === 'error' ? 6000 : 4000);
+  toast.addEventListener('click', () => toast.remove());
+
+  const delay = type === 'error' ? 6000 : 4000;
+  setTimeout(() => { if (toast.parentElement) toast.remove(); }, delay);
 }
 
+// ── Helpers ────────────────────────────────────
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('fr-CD', { day:'2-digit', month:'short', year:'numeric' });
+  return new Date(dateStr).toLocaleDateString('fr-CD', {
+    day: '2-digit', month: 'short', year: 'numeric'
+  });
 }
 
 function statusBadge(status) {
   const classes = {
     APPROVED: 'badge-approved',
-    ACTIVE: 'badge-approved',
-    SUBMITTED: 'badge-pending',
-    PENDING: 'badge-pending',
-    UNDER_REVIEW: 'badge-pending',
-    INTERVIEWING: 'badge-interviewing',
-    REJECTED: 'badge-rejected',
-    POSITION_FILLED: 'badge-rejected',
-    CLOSED: 'badge-rejected',
-    SUSPENDED: 'badge-rejected'
+    ACTIVE:   'badge-approved',
+    SUBMITTED:      'badge-pending',
+    PENDING:        'badge-pending',
+    UNDER_REVIEW:   'badge-pending',
+    INTERVIEWING:   'badge-interviewing',
+    REJECTED:       'badge-rejected',
+    POSITION_FILLED:'badge-rejected',
+    CLOSED:         'badge-rejected',
+    SUSPENDED:      'badge-rejected'
   };
-  const label = Lang.t('status_' + status) || status;
-  return `<span class="badge-status ${classes[status] || 'badge-pending'}">${label}</span>`;
+  const label = (typeof Lang !== 'undefined' ? Lang.t('status_' + status) : null) || status;
+  return `<span class="badge-status ${classes[status] || 'badge-pending'}">${escapeHtml(label)}</span>`;
+}
+
+function spinner() {
+  return '<div class="spinner"></div>';
+}
+
+function emptyState(message, linkText, linkHref) {
+  return `
+    <div class="empty-state">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">📭</div>
+      <p>${escapeHtml(message)}</p>
+      ${linkText ? `<a href="${linkHref}" style="margin-top:0.75rem;display:inline-block;">${escapeHtml(linkText)}</a>` : ''}
+    </div>
+  `;
 }

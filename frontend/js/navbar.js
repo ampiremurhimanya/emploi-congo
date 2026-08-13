@@ -6,7 +6,7 @@
   const dashMap = {
     STUDENT: 'student-dashboard.html',
     COMPANY: 'company-dashboard.html',
-    ADMIN: 'admin-dashboard.html'
+    ADMIN:   'admin-dashboard.html'
   };
 
   if (!user) {
@@ -18,11 +18,15 @@
   } else {
     area.innerHTML = `
       <button id="langToggleBtn" class="btn btn-outline-light btn-sm">🇬🇧 EN</button>
-      <span class="text-white small d-none d-md-inline">
+      <span class="text-white" style="font-size:0.9rem;font-weight:600;">
         ${escapeHtml(user.fullName.split(' ')[0])}
       </span>
-      <a href="${dashMap[user.role]}" class="btn btn-outline-light btn-sm" data-i18n="dashboard">Tableau de bord</a>
-      <button class="btn btn-gold btn-sm" onclick="Api.logout()" data-i18n="signOut">Se déconnecter</button>
+      <a href="${dashMap[user.role] || 'index.html'}" class="btn btn-outline-light btn-sm" data-i18n="dashboard">
+        Tableau de bord
+      </a>
+      <button class="btn btn-gold btn-sm" onclick="Api.logout()" data-i18n="signOut">
+        Se déconnecter
+      </button>
     `;
   }
 })();
