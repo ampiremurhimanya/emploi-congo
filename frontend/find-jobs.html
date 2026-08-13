@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmploiCongo — Trouver un emploi</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar-ec">
+      <a href="index.html" class="brand">Emploi<span>Congo</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="find-jobs.html" class="nav-link active">Offres d'emploi</a>
+        <a href="register.html?role=COMPANY" class="nav-link"
+          >Publier une offre</a
+        >
+      </div>
+      <div id="navAuthArea"></div>
+    </nav>
+
+    <!-- FILTER BAR -->
+    <div
+      style="
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 1.25rem 1.5rem;
+      "
+    >
+      <div class="container">
+        <div class="d-flex flex-wrap gap-2 align-center">
+          <input
+            type="text"
+            id="fKeyword"
+            class="form-control"
+            placeholder="Titre du poste, mots-clés..."
+            style="flex: 1; min-width: 200px"
+          />
+          <select id="fField" class="form-select" style="max-width: 220px">
+            <option value="">Tous les domaines</option>
+            <option value="Informatique & Développement">
+              💻 Informatique & Dev
+            </option>
+            <option value="Finance & Comptabilité">
+              💰 Finance & Comptabilité
+            </option>
+            <option value="Marketing & Communication">
+              📣 Marketing & Com
+            </option>
+            <option value="Ressources Humaines">👥 Ressources Humaines</option>
+            <option value="Humanitaire & ONG">🌍 Humanitaire & ONG</option>
+            <option value="Ingénierie">⚙️ Ingénierie</option>
+            <option value="Santé">🏥 Santé</option>
+            <option value="Éducation">🎓 Éducation</option>
+            <option value="Droit & Juridique">⚖️ Droit & Juridique</option>
+            <option value="Autre">Autre</option>
+          </select>
+          <input
+            type="text"
+            id="fCompany"
+            class="form-control"
+            placeholder="Société..."
+            style="max-width: 180px"
+          />
+          <button class="btn btn-navy" onclick="search(0)">
+            🔍 Rechercher
+          </button>
+          <button class="btn btn-outline-dark" onclick="clearFilters()">
+            Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top: 2rem; padding-bottom: 3rem">
+      <div class="d-flex justify-between align-center mb-3 flex-wrap gap-2">
+        <div>
+          <h2 class="section-title">Offres d'emploi</h2>
+          <p class="text-muted text-small" id="resultsCount">Chargement...</p>
+        </div>
+      </div>
+
+      <div id="resultsList"><div class="spinner"></div></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- APPLY MODAL -->
+    <div id="applyModal" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title" id="applyModalTitle">Postuler</div>
+        <p class="text-muted text-small mb-3">
+          Votre CV actuel sera joint automatiquement à cette candidature.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Lettre de motivation (optionnel)</label>
+          <textarea
+            id="coverNote"
+            class="form-control"
+            rows="4"
+            placeholder="Expliquez brièvement pourquoi vous êtes le candidat idéal..."
+          ></textarea>
+        </div>
+        <div class="d-flex gap-2 justify-end mt-3">
+          <button class="btn btn-outline-dark" onclick="closeModal()">
+            Annuler
+          </button>
+          <button
+            class="btn btn-navy"
+            id="confirmApplyBtn"
+            onclick="confirmApply()"
+          >
+            Envoyer ma candidature
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+      Lang.init();
+
+      let currentPage = 0;
+      let pendingOpportunityId = null;
+      const user = Api.currentUser();
+
+      // Read URL params
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("keyword"))
+        document.getElementById("fKeyword").value = params.get("keyword");
+      if (params.get("field"))
+        document.getElementById("fField").value = params.get("field");
+
+      function clearFilters() {
+        document.getElementById("fKeyword").value = "";
+        document.getElementById("fField").value = "";
+        document.getElementById("fCompany").value = "";
+        search(0);
+      }
+
+      function buildQuery(page) {
+        const q = new URLSearchParams();
+        const k = document.getElementById("fKeyword").value.trim();
+        const f = document.getElementById("fField").value;
+        const c = document.getElementById("fCompany").value.trim();
+        if (k) q.set("keyword", k);
+        if (f) q.set("field", f);
+        if (c) q.set("companyName", c);
+        q.set("page", page);
+        q.set("size", 10);
+        return q.toString();
+      }
+
+      function renderCard(o) {
+        const isStudent = user && user.role === "STUDENT";
+        const deadline = o.application_deadline
+          ? `<span class="text-small text-muted">📅 Date limite: ${formatDate(o.application_deadline)}</span>`
+          : "";
+        const salary = o.salary_range
+          ? `<span class="opp-tag">💰 ${escapeHtml(o.salary_range)}</span>`
+          : "";
+        const type = o.employment_type
+          ? `<span class="opp-tag">${escapeHtml(o.employment_type)}</span>`
+          : "";
+        const verified = o.verified_company
+          ? `<span class="opp-tag" style="color:var(--success);border-color:var(--success-border);">🛡️ Vérifiée</span>`
+          : "";
+
+        let actions = "";
+        if (!user) {
+          actions = `<a href="login.html" class="btn btn-navy btn-sm">Se connecter pour postuler</a>`;
+        } else if (isStudent) {
+          actions = `
+        <button class="btn btn-outline-dark btn-sm save-btn" data-id="${o.id}">☆ Sauvegarder</button>
+        <button class="btn btn-navy btn-sm apply-btn"
+          data-id="${o.id}"
+          data-title="${escapeHtml(o.title)}">
+          Postuler
+        </button>
+      `;
+        } else {
+          actions = `<a href="login.html" class="btn btn-outline-dark btn-sm">Postuler</a>`;
+        }
+
+        return `
+      <div class="opp-card">
+        <div class="d-flex gap-3 align-start flex-1">
+          <div class="company-logo">${escapeHtml((o.company_name || "?")[0].toUpperCase())}</div>
+          <div class="flex-1">
+            <div class="fw-black mb-1" style="font-size:1.02rem;">${escapeHtml(o.title)}</div>
+            <div class="text-muted text-small mb-2">
+              ${escapeHtml(o.company_name)} • 📍 ${escapeHtml(o.location || "Non spécifié")}
+            </div>
+            <p class="text-small mb-2" style="color:var(--text);max-width:600px;">
+              ${escapeHtml((o.description || "").slice(0, 160))}${(o.description || "").length > 160 ? "…" : ""}
+            </p>
+            <div class="d-flex flex-wrap gap-2 align-center">
+              ${type}${salary}${verified}${deadline}
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-col gap-2 align-center" style="flex-shrink:0;">
+          ${actions}
+        </div>
+      </div>
+    `;
+      }
+
+      function renderPagination(data) {
+        const el = document.getElementById("pagination");
+        if (data.totalPages <= 1) {
+          el.innerHTML = "";
+          return;
+        }
+        let html = "";
+        html += `<button class="page-btn" onclick="search(${data.number - 1})"
+      ${data.number === 0 ? "disabled" : ""}>←</button>`;
+        for (let i = 0; i < data.totalPages; i++) {
+          html += `<button class="page-btn ${i === data.number ? "active" : ""}"
+        onclick="search(${i})">${i + 1}</button>`;
+        }
+        html += `<button class="page-btn" onclick="search(${data.number + 1})"
+      ${data.number === data.totalPages - 1 ? "disabled" : ""}>→</button>`;
+        el.innerHTML = html;
+      }
+
+      async function search(page = 0) {
+        currentPage = page;
+        const list = document.getElementById("resultsList");
+        list.innerHTML = '<div class="spinner"></div>';
+        document.getElementById("resultsCount").textContent = "Chargement...";
+
+        try {
+          const data = await Api.get(
+            "/opportunities/public/search?" + buildQuery(page),
+          );
+          document.getElementById("resultsCount").textContent =
+            `${data.totalElements} offre(s) trouvée(s)`;
+
+          if (!data.content || data.content.length === 0) {
+            list.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">🔍</span>
+            <p>Aucune opportunité ne correspond à votre recherche.</p>
+            <p class="text-small mt-2">Essayez des mots-clés différents ou effacez les filtres.</p>
+          </div>`;
+            document.getElementById("pagination").innerHTML = "";
+            return;
+          }
+
+          list.innerHTML = `<div class="opp-card-list">${data.content.map(renderCard).join("")}</div>`;
+          renderPagination(data);
+          wireActions();
+        } catch (err) {
+          list.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">⚠️</span>
+          <p>${escapeHtml(err.message)}</p>
+        </div>`;
+        }
+      }
+
+      function wireActions() {
+        document.querySelectorAll(".apply-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (!user) {
+              window.location.href = "login.html";
+              return;
+            }
+            pendingOpportunityId = btn.dataset.id;
+            document.getElementById("applyModalTitle").textContent =
+              "Postuler — " + btn.dataset.title;
+            document.getElementById("coverNote").value = "";
+            document.getElementById("applyModal").style.display = "flex";
+          });
+        });
+
+        document.querySelectorAll(".save-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            try {
+              const res = await Api.post("/student/saved/" + btn.dataset.id);
+              btn.textContent = res.saved ? "★ Sauvegardé" : "☆ Sauvegarder";
+              showToast(
+                res.saved
+                  ? "Offre sauvegardée !"
+                  : "Offre retirée des sauvegardes.",
+              );
+            } catch (err) {
+              if (err.message.includes("connecter"))
+                window.location.href = "login.html";
+              else showToast(err.message, "error");
+            }
+          });
+        });
+      }
+
+      function closeModal() {
+        document.getElementById("applyModal").style.display = "none";
+      }
+
+      async function confirmApply() {
+        const btn = document.getElementById("confirmApplyBtn");
+        const note = document.getElementById("coverNote").value.trim();
+        btn.disabled = true;
+        btn.textContent = "Envoi...";
+
+        try {
+          await Api.post(`/student/applications/${pendingOpportunityId}`, {
+            coverNote: note,
+          });
+          closeModal();
+          showToast("Candidature envoyée avec succès ! ✅");
+          search(currentPage);
+        } catch (err) {
+          showToast(err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Envoyer ma candidature";
+        }
+      }
+
+      // Enter key on filters
+      ["fKeyword", "fCompany"].forEach((id) => {
+        document.getElementById(id).addEventListener("keydown", (e) => {
+          if (e.key === "Enter") search(0);
+        });
+      });
+      document
+        .getElementById("fField")
+        .addEventListener("change", () => search(0));
+
+      search(0);
+    </script>
+  </body>
+</html>
