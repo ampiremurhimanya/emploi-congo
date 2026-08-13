@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmploiCongo — Votre carrière commence ici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar-ec">
+      <a href="index.html" class="brand">Emploi<span>Congo</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active" data-i18n="findJobs"
+          >Trouver un emploi</a
+        >
+        <a href="login.html" class="nav-link" data-i18n="myApplications"
+          >Mes candidatures</a
+        >
+        <a
+          href="register.html?role=COMPANY"
+          class="nav-link"
+          data-i18n="postJob"
+          >Publier une offre</a
+        >
+      </div>
+      <div id="navAuthArea"></div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1 data-i18n="heroTitle">Votre carrière <span>commence ici</span></h1>
+        <p data-i18n="heroSubtitle">
+          Connecter les talents congolais avec les meilleures opportunités
+          locales et internationales.
+        </p>
+        <div class="search-box">
+          <input
+            type="text"
+            id="heroKeyword"
+            class="form-control"
+            data-i18n-placeholder="searchPlaceholder"
+            placeholder="Titre du poste, mots-clés..."
+          />
+          <select id="heroField" class="form-select" style="max-width: 220px">
+            <option value="" data-i18n="fields.all">Tous les domaines</option>
+            <option value="Informatique & Développement">
+              💻 Informatique & Dev
+            </option>
+            <option value="Finance & Comptabilité">
+              💰 Finance & Comptabilité
+            </option>
+            <option value="Marketing & Communication">
+              📣 Marketing & Com
+            </option>
+            <option value="Ressources Humaines">👥 Ressources Humaines</option>
+            <option value="Humanitaire & ONG">🌍 Humanitaire & ONG</option>
+            <option value="Ingénierie">⚙️ Ingénierie</option>
+            <option value="Santé">🏥 Santé</option>
+            <option value="Éducation">🎓 Éducation</option>
+            <option value="Droit & Juridique">⚖️ Droit & Juridique</option>
+            <option value="Autre">Autre</option>
+          </select>
+          <button
+            class="btn btn-gold"
+            onclick="doSearch()"
+            data-i18n="searchBtn"
+          >
+            Rechercher
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-banner">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-between" style="gap: 2rem">
+          <div class="stat-item">
+            <div class="stat-number" id="statOpps">—</div>
+            <div class="stat-label" data-i18n="activeOpportunities">
+              Offres actives
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statCompanies">—</div>
+            <div class="stat-label" data-i18n="partnerCompanies">
+              Sociétés partenaires
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statStudents">—</div>
+            <div class="stat-label" data-i18n="registeredStudents">
+              Étudiants inscrits
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LATEST OPPORTUNITIES -->
+    <section class="section container">
+      <div class="d-flex justify-between align-center mb-3">
+        <div>
+          <h2 class="section-title" data-i18n="latestOpportunities">
+            Dernières opportunités
+          </h2>
+          <p class="section-sub" data-i18n="latestSubtitle">
+            Offres vérifiées et publiées par notre équipe.
+          </p>
+        </div>
+        <a
+          href="find-jobs.html"
+          class="btn btn-outline-dark"
+          data-i18n="viewAll"
+          >Voir tout →</a
+        >
+      </div>
+      <div id="latestList"><div class="spinner"></div></div>
+    </section>
+
+    <!-- ROLE CARDS -->
+    <section class="section" style="background: #fff">
+      <div class="container">
+        <h2 class="section-title text-center" data-i18n="tailoredTitle">
+          Une plateforme pour tous
+        </h2>
+        <p class="section-sub text-center" data-i18n="tailoredSubtitle">
+          Étudiants, entreprises et ONG — une seule plateforme.
+        </p>
+        <div class="grid-3 mt-3">
+          <div class="card card-body">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem">🎓</div>
+            <h5 class="fw-black mb-2" data-i18n="forStudents">
+              Pour les étudiants
+            </h5>
+            <ul
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
+              id="studentFeatures"
+            ></ul>
+            <div class="mt-3">
+              <a
+                href="register.html?role=STUDENT"
+                class="btn btn-navy btn-block"
+                data-i18n="getStarted"
+                >Commencer</a
+              >
+            </div>
+          </div>
+          <div class="card card-body" style="border: 2px solid var(--gold)">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem">🏢</div>
+            <h5 class="fw-black mb-2" data-i18n="forCompanies">
+              Pour les entreprises & ONG
+            </h5>
+            <ul
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
+              id="companyFeatures"
+            ></ul>
+            <div class="mt-3">
+              <a
+                href="register.html?role=COMPANY"
+                class="btn btn-gold btn-block"
+                data-i18n="postOpening"
+                >Publier une offre</a
+              >
+            </div>
+          </div>
+          <div class="card card-body">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem">🛡️</div>
+            <h5 class="fw-black mb-2" data-i18n="forAdmin">
+              Pour l'administration
+            </h5>
+            <ul
+              style="list-style: none; color: var(--muted); font-size: 0.9rem"
+              id="adminFeatures"
+            ></ul>
+            <div class="mt-3">
+              <a
+                href="login.html"
+                class="btn btn-outline-dark btn-block"
+                data-i18n="adminDashboard"
+                >Tableau de bord</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section container">
+      <div class="cta-section">
+        <h2 data-i18n="ctaTitle">Prêt à faire le grand saut ?</h2>
+        <p data-i18n="ctaSubtitle">
+          Rejoignez des milliers d'étudiants et d'entreprises qui façonnent
+          l'avenir du Congo.
+        </p>
+        <div
+          class="d-flex gap-2"
+          style="justify-content: center; flex-wrap: wrap"
+        >
+          <a
+            href="register.html"
+            class="btn btn-gold btn-lg"
+            data-i18n="createAccount"
+            >Créer un compte</a
+          >
+          <a
+            href="mailto:contact@emploicongo.cd"
+            class="btn btn-outline-light btn-lg"
+            data-i18n="contactUs"
+            >Nous contacter</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div
+        class="container d-flex flex-wrap justify-between align-center"
+        style="gap: 1rem"
+      >
+        <div>
+          <div class="brand mb-1">Emploi<span>Congo</span></div>
+          <small>© 2024 EmploiCongo. Tous droits réservés.</small>
+        </div>
+        <div class="d-flex gap-3" style="font-size: 0.88rem">
+          <a href="#">Contact</a>
+          <a href="#">À propos</a>
+          <a href="#">Confidentialité</a>
+          <a href="#">CGU</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+      Lang.init();
+
+      // Load stats
+      Api.get("/opportunities/stats")
+        .then((data) => {
+          document.getElementById("statOpps").textContent =
+            data.activeOpportunities + "+";
+          document.getElementById("statCompanies").textContent =
+            data.partnerCompanies + "+";
+          document.getElementById("statStudents").textContent =
+            data.registeredStudents + "+";
+        })
+        .catch(() => {});
+
+      // Load latest opportunities
+      Api.get("/opportunities/public/latest?limit=6")
+        .then((list) => {
+          const el = document.getElementById("latestList");
+          if (!list.length) {
+            el.innerHTML = `<div class="empty-state">Aucune opportunité disponible pour le moment.</div>`;
+            return;
+          }
+          el.innerHTML = list
+            .map(
+              (o) => `
+      <div class="opp-card mb-2 d-flex justify-between align-center flex-wrap" style="gap:1rem;">
+        <div class="d-flex gap-2 align-center">
+          <div class="company-logo">${escapeHtml((o.company_name || "?")[0])}</div>
+          <div>
+            <div class="fw-bold">${escapeHtml(o.title)}</div>
+            <div class="text-muted text-small">${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}</div>
+          </div>
+        </div>
+        <div class="d-flex gap-2 align-center flex-wrap">
+          <span class="text-small text-muted">${formatDate(o.application_deadline)}</span>
+          <span class="badge-status badge-approved">Approuvée</span>
+          <a href="find-jobs.html" class="btn btn-navy btn-sm" data-i18n="applyNow">Postuler</a>
+        </div>
+      </div>
+    `,
+            )
+            .join("");
+        })
+        .catch(() => {
+          document.getElementById("latestList").innerHTML =
+            `<div class="empty-state">Impossible de charger les offres.</div>`;
+        });
+
+      // Role card features
+      function fillFeatures(id, key) {
+        const items = Lang.t(key);
+        if (Array.isArray(items)) {
+          document.getElementById(id).innerHTML = items
+            .map((f) => `<li style="padding:0.3rem 0;">✓ ${f}</li>`)
+            .join("");
+        }
+      }
+      fillFeatures("studentFeatures", "forStudentsDesc");
+      fillFeatures("companyFeatures", "forCompaniesDesc");
+      fillFeatures("adminFeatures", "forAdminDesc");
+
+      function doSearch() {
+        const k = document.getElementById("heroKeyword").value.trim();
+        const f = document.getElementById("heroField").value;
+        const p = new URLSearchParams();
+        if (k) p.set("keyword", k);
+        if (f) p.set("field", f);
+        window.location.href = "find-jobs.html?" + p.toString();
+      }
+
+      document
+        .getElementById("heroKeyword")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") doSearch();
+        });
+    </script>
+  </body>
+</html>

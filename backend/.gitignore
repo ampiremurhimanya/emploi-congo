@@ -1,0 +1,12 @@
+# Never push these to GitHub
+.env
+node_modules/
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
