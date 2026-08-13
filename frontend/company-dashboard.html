@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmploiCongo — Tableau de bord Entreprise</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar-ec">
+      <a href="index.html" class="brand">Emploi<span>Congo</span></a>
+      <div id="navAuthArea"></div>
+    </nav>
+
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sidebar-brand">Tableau de bord</div>
+        <div class="sidebar-sub">Espace entreprise</div>
+        <nav class="sidebar-nav">
+          <a
+            href="#"
+            class="sidebar-link active"
+            onclick="showTab('overview', this)"
+          >
+            <span class="icon">📊</span> Vue d'ensemble
+          </a>
+          <a href="#" class="sidebar-link" onclick="showTab('post', this)">
+            <span class="icon">➕</span> Publier une offre
+          </a>
+          <a href="#" class="sidebar-link" onclick="showTab('postings', this)">
+            <span class="icon">📋</span> Mes offres
+          </a>
+          <a
+            href="#"
+            class="sidebar-link"
+            onclick="showTab('applicants', this)"
+          >
+            <span class="icon">👥</span> Candidats
+          </a>
+        </nav>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main-content">
+        <!-- TAB: OVERVIEW -->
+        <div id="tab-overview">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            Tableau de bord Entreprise
+          </h2>
+          <p class="text-muted mb-4">
+            Gérez vos recrutements et suivez vos candidatures.
+          </p>
+
+          <div class="grid-3 mb-4">
+            <div class="stat-card">
+              <div class="stat-label">Candidats totaux</div>
+              <div class="stat-value" id="statTotal">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label" style="color: var(--danger)">
+                ⚠️ En attente de révision
+              </div>
+              <div class="stat-value" id="statPending">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Offres actives</div>
+              <div class="stat-value" id="statActive">—</div>
+            </div>
+          </div>
+
+          <!-- Recent applicants -->
+          <div class="card">
+            <div class="card-header">
+              👥 Candidats récents
+              <a
+                href="#"
+                class="text-small text-navy"
+                onclick="showTab('applicants', null)"
+                >Voir tout →</a
+              >
+            </div>
+            <div style="overflow-x: auto">
+              <div id="recentApplicants" style="padding: 1rem">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: POST JOB -->
+        <div id="tab-post" style="display: none">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            Publier une opportunité
+          </h2>
+          <p class="text-muted mb-4">
+            Votre offre sera soumise à validation par notre équipe avant
+            publication.
+          </p>
+          <div class="card" style="max-width: 680px">
+            <div class="card-body">
+              <div class="form-error" id="postError"></div>
+
+              <div class="form-group">
+                <label class="form-label">Titre du poste *</label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  class="form-control"
+                  placeholder="ex: Développeur Full Stack Senior"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Domaine *</label>
+                <select id="jobField" class="form-select">
+                  <option value="">Sélectionnez un domaine</option>
+                  <option>Informatique & Développement</option>
+                  <option>Finance & Comptabilité</option>
+                  <option>Marketing & Communication</option>
+                  <option>Ressources Humaines</option>
+                  <option>Humanitaire & ONG</option>
+                  <option>Ingénierie</option>
+                  <option>Santé</option>
+                  <option>Éducation</option>
+                  <option>Droit & Juridique</option>
+                  <option>Autre</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description du poste</label>
+                <textarea
+                  id="jobDesc"
+                  class="form-control"
+                  rows="5"
+                  placeholder="Décrivez les responsabilités, les qualifications requises, les avantages..."
+                ></textarea>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Lieu</label>
+                  <input
+                    type="text"
+                    id="jobLocation"
+                    class="form-control"
+                    placeholder="ex: Kinshasa, DRC ou Télétravail"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Type de contrat</label>
+                  <select id="jobType" class="form-select">
+                    <option value="">Sélectionnez</option>
+                    <option>Stage</option>
+                    <option>CDI</option>
+                    <option>CDD</option>
+                    <option>Freelance</option>
+                    <option>Bénévolat</option>
+                    <option>Programme Diplômant</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Fourchette salariale</label>
+                  <input
+                    type="text"
+                    id="jobSalary"
+                    class="form-control"
+                    placeholder="ex: USD 500-800/mois"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date limite de candidature</label>
+                  <input type="date" id="jobDeadline" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-notice mb-3">
+                ℹ️ Votre offre sera examinée par notre équipe avant d'être
+                visible par les candidats. Délai de traitement : 24-48 heures.
+              </div>
+
+              <button
+                class="btn btn-navy btn-block"
+                id="postBtn"
+                onclick="postJob()"
+              >
+                📤 Soumettre l'offre
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: MY POSTINGS -->
+        <div id="tab-postings" style="display: none">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            Mes offres publiées
+          </h2>
+          <p class="text-muted mb-4">Suivez le statut de toutes vos offres.</p>
+          <div class="card">
+            <div style="overflow-x: auto">
+              <div id="postingsList" style="padding: 1rem">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: APPLICANTS -->
+        <div id="tab-applicants" style="display: none">
+          <div class="d-flex justify-between align-center mb-3 flex-wrap gap-2">
+            <div>
+              <h2
+                class="fw-black mb-1"
+                style="font-size: 1.7rem; color: var(--navy)"
+              >
+                Tous les candidats
+              </h2>
+              <p class="text-muted">
+                Gérez et mettez à jour le statut des candidatures.
+              </p>
+            </div>
+            <input
+              type="text"
+              id="searchApplicants"
+              class="form-control"
+              placeholder="Rechercher un candidat..."
+              style="max-width: 250px"
+              oninput="filterApplicants(this.value)"
+            />
+          </div>
+          <div class="card">
+            <div style="overflow-x: auto">
+              <div id="applicantsList" style="padding: 1rem">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS UPDATE MODAL -->
+    <div id="statusModal" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeStatusModal()">✕</button>
+        <div class="modal-title">Mettre à jour la candidature</div>
+        <input type="hidden" id="statusAppId" />
+
+        <div class="form-group">
+          <label class="form-label">Nouveau statut</label>
+          <select id="statusSelect" class="form-select">
+            <option value="SUBMITTED">Soumise</option>
+            <option value="UNDER_REVIEW">En révision</option>
+            <option value="INTERVIEWING">Entretien planifié</option>
+            <option value="APPROVED">Approuvée ✅</option>
+            <option value="REJECTED">Rejetée ❌</option>
+            <option value="POSITION_FILLED">Poste pourvu</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Étape actuelle (1-4)</label>
+          <input
+            type="number"
+            id="statusStep"
+            class="form-control"
+            min="1"
+            max="4"
+            value="2"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message au candidat (optionnel)</label>
+          <textarea
+            id="statusFeedback"
+            class="form-control"
+            rows="3"
+            placeholder="ex: Merci pour votre candidature. Nous souhaitons vous rencontrer..."
+          ></textarea>
+        </div>
+        <div class="d-flex gap-2 justify-end mt-3">
+          <button class="btn btn-outline-dark" onclick="closeStatusModal()">
+            Annuler
+          </button>
+          <button class="btn btn-navy" onclick="confirmStatusUpdate()">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+      Lang.init();
+      Api.requireRole("COMPANY");
+
+      let allApplicants = [];
+
+      function showTab(name, link) {
+        ["overview", "post", "postings", "applicants"].forEach((t) => {
+          document.getElementById("tab-" + t).style.display =
+            t === name ? "" : "none";
+        });
+        document
+          .querySelectorAll(".sidebar-link")
+          .forEach((l) => l.classList.remove("active"));
+        if (link) link.classList.add("active");
+        if (name === "postings") loadPostings();
+        if (name === "applicants") loadApplicants();
+      }
+
+      async function loadDashboard() {
+        try {
+          const stats = await Api.get("/company/dashboard");
+          document.getElementById("statTotal").textContent =
+            stats.totalApplicants;
+          document.getElementById("statPending").textContent =
+            stats.pendingReviews;
+          document.getElementById("statActive").textContent =
+            stats.activeListings;
+
+          const apps = await Api.get("/company/applicants");
+          allApplicants = apps;
+          const el = document.getElementById("recentApplicants");
+          if (!apps.length) {
+            el.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">👥</span>
+            <p>Aucun candidat pour le moment.</p>
+            <p class="text-small mt-2">Publiez une offre pour commencer à recevoir des candidatures.</p>
+          </div>`;
+            return;
+          }
+          el.innerHTML = `
+        <table class="ec-table">
+          <thead>
+            <tr>
+              <th>Candidat</th>
+              <th>Poste</th>
+              <th>Statut</th>
+              <th>Postulé le</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${apps.slice(0, 5).map(applicantRow).join("")}
+          </tbody>
+        </table>`;
+          wireStatusBtns();
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      function applicantRow(app) {
+        return `
+      <tr>
+        <td>
+          <div class="fw-bold text-small">${escapeHtml(app.student_name)}</div>
+          <div class="text-xs text-muted">${escapeHtml(app.student_email)}</div>
+          <div class="text-xs text-muted">${escapeHtml(app.degree_program || "")}</div>
+        </td>
+        <td class="text-small">${escapeHtml(app.opportunity_title)}</td>
+        <td>${statusBadge(app.status)}</td>
+        <td class="text-xs text-muted">${formatDate(app.applied_at)}</td>
+        <td>
+          <div class="d-flex gap-1">
+            ${
+              app.cv_file_snapshot
+                ? `<a href="http://localhost:5000/uploads/cvs/${app.cv_file_snapshot}"
+                target="_blank" class="btn btn-outline-dark btn-sm">⬇ CV</a>`
+                : '<span class="text-xs text-muted">Pas de CV</span>'
+            }
+            <button class="btn btn-navy btn-sm update-status-btn"
+              data-id="${app.id}"
+              data-status="${app.status}"
+              data-step="${app.current_step}">
+              Mettre à jour
+            </button>
+          </div>
+        </td>
+      </tr>`;
+      }
+
+      function wireStatusBtns() {
+        document.querySelectorAll(".update-status-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.getElementById("statusAppId").value = btn.dataset.id;
+            document.getElementById("statusSelect").value = btn.dataset.status;
+            document.getElementById("statusStep").value = btn.dataset.step;
+            document.getElementById("statusFeedback").value = "";
+            document.getElementById("statusModal").style.display = "flex";
+          });
+        });
+      }
+
+      function closeStatusModal() {
+        document.getElementById("statusModal").style.display = "none";
+      }
+
+      async function confirmStatusUpdate() {
+        const id = document.getElementById("statusAppId").value;
+        const payload = {
+          status: document.getElementById("statusSelect").value,
+          currentStep: parseInt(document.getElementById("statusStep").value),
+          companyFeedback:
+            document.getElementById("statusFeedback").value.trim() || null,
+        };
+        try {
+          await Api.patch("/company/applications/" + id + "/status", payload);
+          closeStatusModal();
+          showToast("Statut mis à jour avec succès ✅");
+          loadDashboard();
+          if (
+            document.getElementById("tab-applicants").style.display !== "none"
+          )
+            loadApplicants();
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function loadPostings() {
+        const el = document.getElementById("postingsList");
+        el.innerHTML = '<div class="spinner"></div>';
+        try {
+          const list = await Api.get("/company/opportunities");
+          if (!list.length) {
+            el.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>Aucune offre publiée.</p>
+            <a href="#" onclick="showTab('post',null)">Publier votre première offre →</a>
+          </div>`;
+            return;
+          }
+          el.innerHTML = `
+        <table class="ec-table">
+          <thead>
+            <tr><th>Titre</th><th>Domaine</th><th>Type</th><th>Date limite</th><th>Statut</th></tr>
+          </thead>
+          <tbody>
+            ${list
+              .map(
+                (o) => `
+              <tr>
+                <td class="fw-bold text-small">${escapeHtml(o.title)}</td>
+                <td class="text-small text-muted">${escapeHtml(o.field)}</td>
+                <td class="text-small">${escapeHtml(o.employment_type || "—")}</td>
+                <td class="text-small">${formatDate(o.application_deadline)}</td>
+                <td>${statusBadge(o.status)}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>`;
+        } catch (err) {
+          el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
+        }
+      }
+
+      async function loadApplicants() {
+        const el = document.getElementById("applicantsList");
+        el.innerHTML = '<div class="spinner"></div>';
+        try {
+          allApplicants = await Api.get("/company/applicants");
+          renderApplicants(allApplicants);
+        } catch (err) {
+          el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
+        }
+      }
+
+      function renderApplicants(list) {
+        const el = document.getElementById("applicantsList");
+        if (!list.length) {
+          el.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">👥</span>
+          <p>Aucun candidat trouvé.</p>
+        </div>`;
+          return;
+        }
+        el.innerHTML = `
+      <table class="ec-table">
+        <thead>
+          <tr><th>Candidat</th><th>Poste</th><th>Statut</th><th>Postulé le</th><th>Actions</th></tr>
+        </thead>
+        <tbody>${list.map(applicantRow).join("")}</tbody>
+      </table>`;
+        wireStatusBtns();
+      }
+
+      function filterApplicants(query) {
+        const q = query.toLowerCase();
+        const filtered = allApplicants.filter(
+          (a) =>
+            (a.student_name || "").toLowerCase().includes(q) ||
+            (a.student_email || "").toLowerCase().includes(q) ||
+            (a.opportunity_title || "").toLowerCase().includes(q),
+        );
+        renderApplicants(filtered);
+      }
+
+      async function postJob() {
+        const btn = document.getElementById("postBtn");
+        const errorBox = document.getElementById("postError");
+        errorBox.classList.remove("show");
+
+        const payload = {
+          title: document.getElementById("jobTitle").value.trim(),
+          field: document.getElementById("jobField").value,
+          description: document.getElementById("jobDesc").value.trim(),
+          location: document.getElementById("jobLocation").value.trim(),
+          employmentType: document.getElementById("jobType").value,
+          salaryRange: document.getElementById("jobSalary").value.trim(),
+          applicationDeadline:
+            document.getElementById("jobDeadline").value || null,
+        };
+
+        if (!payload.title || !payload.field) {
+          errorBox.textContent = "Le titre et le domaine sont obligatoires.";
+          errorBox.classList.add("show");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Soumission en cours...";
+
+        try {
+          await Api.post("/company/opportunities", payload);
+          showToast(
+            "Offre soumise ! Elle sera visible après validation par notre équipe. ✅",
+          );
+          // Reset form
+          [
+            "jobTitle",
+            "jobDesc",
+            "jobLocation",
+            "jobSalary",
+            "jobDeadline",
+          ].forEach((id) => {
+            document.getElementById(id).value = "";
+          });
+          document.getElementById("jobField").value = "";
+          document.getElementById("jobType").value = "";
+          showTab("postings", null);
+        } catch (err) {
+          errorBox.textContent = err.message;
+          errorBox.classList.add("show");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "📤 Soumettre l'offre";
+        }
+      }
+
+      loadDashboard();
+    </script>
+  </body>
+</html>
