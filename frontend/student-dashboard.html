@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmploiCongo — Tableau de bord Étudiant</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar-ec">
+      <a href="index.html" class="brand">Emploi<span>Congo</span></a>
+      <div class="nav-links">
+        <a href="find-jobs.html" class="nav-link">Offres d'emploi</a>
+      </div>
+      <div id="navAuthArea"></div>
+    </nav>
+
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="d-flex align-center gap-2 mb-3">
+          <div
+            class="company-logo"
+            id="studentInitial"
+            style="width: 40px; height: 40px; font-size: 1rem"
+          >
+            ?
+          </div>
+          <div>
+            <div class="fw-bold text-small" id="sidebarName">Chargement...</div>
+            <div class="text-xs text-muted" id="sidebarDegree"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="sidebar-brand mt-3">Tableau de bord</div>
+        <div class="sidebar-sub">Espace étudiant</div>
+        <nav class="sidebar-nav">
+          <a
+            href="#overview"
+            class="sidebar-link active"
+            onclick="showTab('overview', this)"
+          >
+            <span class="icon">📊</span> Vue d'ensemble
+          </a>
+          <a
+            href="#applications"
+            class="sidebar-link"
+            onclick="showTab('applications', this)"
+          >
+            <span class="icon">📁</span> Mes candidatures
+          </a>
+          <a
+            href="#saved"
+            class="sidebar-link"
+            onclick="showTab('saved', this)"
+          >
+            <span class="icon">🔖</span> Offres sauvegardées
+          </a>
+          <a href="#cv" class="sidebar-link" onclick="showTab('cv', this)">
+            <span class="icon">📄</span> Mon CV
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <nav class="sidebar-nav">
+            <a href="find-jobs.html" class="sidebar-link">
+              <span class="icon">🔍</span> Chercher des offres
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main-content">
+        <!-- TAB: OVERVIEW -->
+        <div id="tab-overview">
+          <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+            <div>
+              <h2
+                class="fw-black"
+                style="font-size: 1.7rem; color: var(--navy)"
+                id="welcomeMsg"
+              >
+                Bienvenue !
+              </h2>
+              <p class="text-muted" id="activeSummary">
+                Chargement de votre activité...
+              </p>
+            </div>
+          </div>
+
+          <!-- Profile completion -->
+          <div class="card mb-4">
+            <div
+              class="card-body d-flex justify-between align-center flex-wrap gap-3"
+            >
+              <div class="flex-1">
+                <div class="fw-bold mb-1">Complétion du profil</div>
+                <div class="progress mt-2" style="max-width: 400px">
+                  <div
+                    class="progress-bar"
+                    id="profileBar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+              <div class="d-flex align-center gap-3">
+                <div
+                  class="fw-black text-navy"
+                  style="font-size: 1.5rem"
+                  id="profilePct"
+                >
+                  0%
+                </div>
+                <a
+                  href="#cv"
+                  class="btn btn-outline-dark btn-sm"
+                  onclick="showTab('cv', null)"
+                >
+                  Compléter →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Recent applications -->
+            <div class="card">
+              <div class="card-header">
+                📋 Candidatures récentes
+                <a
+                  href="#applications"
+                  class="text-small text-navy"
+                  onclick="showTab('applications', null)"
+                >
+                  Voir tout →
+                </a>
+              </div>
+              <div style="padding: 1rem" id="recentApps">
+                <div class="spinner"></div>
+              </div>
+            </div>
+
+            <!-- Recommended -->
+            <div class="card">
+              <div class="card-header">⭐ Recommandé pour vous</div>
+              <div style="padding: 1rem" id="recommendedList">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: APPLICATIONS -->
+        <div id="tab-applications" style="display: none">
+          <h2 class="section-title mb-1">Mes candidatures</h2>
+          <p class="text-muted mb-3">
+            Suivez l'avancement de toutes vos candidatures.
+          </p>
+          <div id="allApplications"><div class="spinner"></div></div>
+        </div>
+
+        <!-- TAB: SAVED -->
+        <div id="tab-saved" style="display: none">
+          <h2 class="section-title mb-1">Offres sauvegardées</h2>
+          <p class="text-muted mb-3">
+            Offres que vous avez mises de côté pour plus tard.
+          </p>
+          <div id="savedList"><div class="spinner"></div></div>
+        </div>
+
+        <!-- TAB: CV -->
+        <div id="tab-cv" style="display: none">
+          <h2 class="section-title mb-1">Mon CV</h2>
+          <p class="text-muted mb-3">
+            Téléchargez votre CV pour postuler aux offres.
+          </p>
+
+          <div class="card" style="max-width: 500px">
+            <div class="card-body">
+              <div id="cvStatus" class="mb-3"></div>
+
+              <div class="form-group">
+                <label class="form-label">Télécharger un nouveau CV</label>
+                <input
+                  type="file"
+                  id="cvFile"
+                  class="form-control"
+                  accept=".pdf,.doc,.docx"
+                />
+                <div class="form-text">
+                  Formats acceptés : PDF, DOC, DOCX — Max 10 Mo
+                </div>
+              </div>
+              <button
+                class="btn btn-navy btn-block"
+                id="uploadCvBtn"
+                onclick="uploadCv()"
+              >
+                ⬆️ Télécharger mon CV
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+      Lang.init();
+
+      const user = Api.requireRole("STUDENT");
+      if (!user) {
+        window.location.href = "login.html";
+      }
+
+      let profile = null;
+      let applications = [];
+
+      function showTab(name, link) {
+        ["overview", "applications", "saved", "cv"].forEach((t) => {
+          document.getElementById("tab-" + t).style.display =
+            t === name ? "" : "none";
+        });
+        document
+          .querySelectorAll(".sidebar-link")
+          .forEach((l) => l.classList.remove("active"));
+        if (link) link.classList.add("active");
+        if (name === "applications") loadAllApplications();
+        if (name === "saved") loadSaved();
+        if (name === "cv") loadCvTab();
+      }
+
+      function appCard(app) {
+        const pct = Math.round((app.current_step / app.total_steps) * 100);
+        return `
+      <div class="opp-card mb-2">
+        <div class="d-flex gap-3 align-start flex-1">
+          <div class="company-logo" style="width:40px;height:40px;font-size:0.9rem;">
+            ${escapeHtml((app.company_name || "?")[0].toUpperCase())}
+          </div>
+          <div class="flex-1">
+            <div class="fw-bold mb-1">${escapeHtml(app.opportunity_title)}</div>
+            <div class="text-small text-muted mb-2">
+              ${escapeHtml(app.company_name)} • ${escapeHtml(app.location || "")}
+            </div>
+            <div class="text-xs text-muted mb-2">
+              Postulé le ${formatDate(app.applied_at)}
+            </div>
+            <div class="d-flex justify-between text-xs text-muted mb-1">
+              <span>Progression</span>
+              <span>Étape ${app.current_step} sur ${app.total_steps}</span>
+            </div>
+            <div class="progress" style="max-width:300px;">
+              <div class="progress-bar" style="width:${pct}%"></div>
+            </div>
+            ${
+              app.company_feedback
+                ? `
+              <div class="mt-2 p-3" style="background:#f8fafc;border-radius:8px;font-size:0.85rem;">
+                💬 ${escapeHtml(app.company_feedback)}
+              </div>`
+                : ""
+            }
+          </div>
+        </div>
+        <div>${statusBadge(app.status)}</div>
+      </div>
+    `;
+      }
+
+      async function loadOverview() {
+        try {
+          profile = await Api.get("/student/profile");
+
+          // Update sidebar
+          document.getElementById("sidebarName").textContent =
+            profile.full_name;
+          document.getElementById("sidebarDegree").textContent =
+            profile.degree_program || "";
+          document.getElementById("studentInitial").textContent =
+            (profile.full_name || "?")[0].toUpperCase();
+
+          // Welcome message
+          document.getElementById("welcomeMsg").textContent =
+            "Bienvenue, " + (profile.full_name || "").split(" ")[0] + " 👋";
+
+          // Profile completion
+          let pct = 30;
+          if (profile.degree_program) pct += 20;
+          if (profile.field_of_study) pct += 20;
+          if (profile.cv_file_name) pct += 30;
+          document.getElementById("profileBar").style.width = pct + "%";
+          document.getElementById("profilePct").textContent = pct + "%";
+
+          // Load recent applications
+          applications = await Api.get("/student/applications");
+          document.getElementById("activeSummary").textContent =
+            applications.length + " candidature(s) au total.";
+
+          const recentEl = document.getElementById("recentApps");
+          if (applications.length === 0) {
+            recentEl.innerHTML = `
+          <div class="empty-state" style="padding:2rem;">
+            <span class="empty-icon">📭</span>
+            <p>Aucune candidature pour le moment.</p>
+            <a href="find-jobs.html">Voir les offres →</a>
+          </div>`;
+          } else {
+            recentEl.innerHTML = applications.slice(0, 3).map(appCard).join("");
+          }
+
+          // Load recommended
+          const recList = await Api.get("/opportunities/public/latest?limit=3");
+          const recEl = document.getElementById("recommendedList");
+          if (!recList || recList.length === 0) {
+            recEl.innerHTML =
+              '<div class="text-muted text-small p-3">Aucune recommandation.</div>';
+          } else {
+            recEl.innerHTML = recList
+              .map(
+                (o) => `
+          <div class="d-flex gap-2 align-start mb-3 pb-3"
+            style="border-bottom:1px solid var(--border);">
+            <div class="company-logo" style="width:36px;height:36px;font-size:0.85rem;">
+              ${(o.company_name || "?")[0].toUpperCase()}
+            </div>
+            <div class="flex-1">
+              <div class="fw-bold text-small">${escapeHtml(o.title)}</div>
+              <div class="text-xs text-muted">${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}</div>
+              ${o.salary_range ? `<div class="text-xs text-navy mt-1">${escapeHtml(o.salary_range)}</div>` : ""}
+            </div>
+            <a href="find-jobs.html" class="btn btn-outline-dark btn-sm">Voir</a>
+          </div>
+        `,
+              )
+              .join("");
+          }
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function loadAllApplications() {
+        const el = document.getElementById("allApplications");
+        el.innerHTML = '<div class="spinner"></div>';
+        try {
+          const apps = await Api.get("/student/applications");
+          if (apps.length === 0) {
+            el.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <p>Vous n'avez pas encore postulé.</p>
+            <a href="find-jobs.html">Parcourir les offres →</a>
+          </div>`;
+            return;
+          }
+          el.innerHTML = `<div class="opp-card-list">${apps.map(appCard).join("")}</div>`;
+        } catch (err) {
+          el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
+        }
+      }
+
+      async function loadSaved() {
+        const el = document.getElementById("savedList");
+        el.innerHTML = '<div class="spinner"></div>';
+        try {
+          const list = await Api.get("/student/saved");
+          if (list.length === 0) {
+            el.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">🔖</span>
+            <p>Aucune offre sauvegardée.</p>
+            <a href="find-jobs.html">Parcourir les offres →</a>
+          </div>`;
+            return;
+          }
+          el.innerHTML =
+            `<div class="opp-card-list">` +
+            list
+              .map(
+                (o) => `
+        <div class="opp-card">
+          <div class="d-flex gap-3 align-center flex-1">
+            <div class="company-logo">${(o.company_name || "?")[0].toUpperCase()}</div>
+            <div>
+              <div class="fw-bold">${escapeHtml(o.title)}</div>
+              <div class="text-small text-muted">
+                ${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}
+              </div>
+              <div class="text-xs text-muted mt-1">
+                Date limite: ${formatDate(o.application_deadline)}
+              </div>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm unsave-btn" data-id="${o.id}">
+              ✕ Retirer
+            </button>
+            <a href="find-jobs.html" class="btn btn-navy btn-sm">Postuler</a>
+          </div>
+        </div>
+      `,
+              )
+              .join("") +
+            `</div>`;
+
+          document.querySelectorAll(".unsave-btn").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              try {
+                await Api.post("/student/saved/" + btn.dataset.id);
+                showToast("Offre retirée des sauvegardes.");
+                loadSaved();
+              } catch (err) {
+                showToast(err.message, "error");
+              }
+            });
+          });
+        } catch (err) {
+          el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
+        }
+      }
+
+      function loadCvTab() {
+        const el = document.getElementById("cvStatus");
+        if (profile && profile.cv_file_name) {
+          el.innerHTML = `
+        <div style="background:var(--success-bg);border:1px solid var(--success-border);
+          color:var(--success);padding:0.8rem 1rem;border-radius:9px;font-weight:600;">
+          ✅ CV actuel : ${escapeHtml(profile.cv_original_name || profile.cv_file_name)}
+        </div>`;
+        } else {
+          el.innerHTML = `
+        <div class="form-notice">
+          ⚠️ Aucun CV téléchargé. Vous ne pouvez pas postuler sans CV.
+        </div>`;
+        }
+      }
+
+      async function uploadCv() {
+        const fileInput = document.getElementById("cvFile");
+        const btn = document.getElementById("uploadCvBtn");
+        if (!fileInput.files.length) {
+          showToast("Veuillez sélectionner un fichier.", "error");
+          return;
+        }
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        btn.disabled = true;
+        btn.textContent = "Téléchargement...";
+        try {
+          profile = await Api.postForm("/student/cv", formData);
+          showToast("CV téléchargé avec succès ! ✅");
+          loadCvTab();
+          // Update profile completion
+          document.getElementById("profileBar").style.width = "100%";
+          document.getElementById("profilePct").textContent = "100%";
+        } catch (err) {
+          showToast(err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "⬆️ Télécharger mon CV";
+        }
+      }
+
+      loadOverview();
+    </script>
+  </body>
+</html>
