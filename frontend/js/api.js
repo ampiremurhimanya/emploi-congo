@@ -40,10 +40,8 @@ const Api = {
     const token = this.token();
     if (token) headers['Authorization'] = 'Bearer ' + token;
     if (!isForm) headers['Content-Type'] = 'application/json';
-
     const opts = { method, headers };
     if (body) opts.body = isForm ? body : JSON.stringify(body);
-
     try {
       const res = await fetch(API_BASE + path, opts);
       if (res.status === 401) { this.logout(); return; }
@@ -64,25 +62,17 @@ const Api = {
   postForm: (path, form) => Api.request('POST', path, form, true)
 };
 
-// ── Notifications ─────────────────────────────
 function showToast(message, type = 'success') {
   let container = document.getElementById('toastContainer');
   if (!container) {
     container = document.createElement('div');
     container.id = 'toastContainer';
     container.style.cssText = `
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 380px;
+      position:fixed;top:80px;right:20px;z-index:9999;
+      display:flex;flex-direction:column;gap:10px;max-width:380px;
     `;
     document.body.appendChild(container);
   }
-
   const config = {
     success: { bg: '#15803d', icon: '✅' },
     error:   { bg: '#b91c1c', icon: '⚠️' },
@@ -91,18 +81,10 @@ function showToast(message, type = 'success') {
 
   const toast = document.createElement('div');
   toast.style.cssText = `
-    background: ${config.bg};
-    color: white;
-    padding: 14px 16px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.92rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.25s ease-out;
-    cursor: pointer;
+    background:${config.bg};color:white;padding:14px 16px;
+    border-radius:12px;font-weight:600;font-size:0.92rem;
+    box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    display:flex;align-items:center;gap:10px;cursor:pointer;
   `;
   toast.innerHTML = `
     <span style="font-size:1.2rem">${config.icon}</span>
@@ -111,19 +93,15 @@ function showToast(message, type = 'success') {
   `;
   container.appendChild(toast);
   toast.addEventListener('click', () => toast.remove());
-
-  const delay = type === 'error' ? 6000 : 4000;
-  setTimeout(() => { if (toast.parentElement) toast.remove(); }, delay);
+  setTimeout(() => { if (toast.parentElement) toast.remove(); },
+    type === 'error' ? 6000 : 4000);
 }
 
-// ── Helpers ────────────────────────────────────
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function formatDate(dateStr) {
@@ -135,31 +113,19 @@ function formatDate(dateStr) {
 
 function statusBadge(status) {
   const classes = {
-    APPROVED: 'badge-approved',
-    ACTIVE:   'badge-approved',
-    SUBMITTED:      'badge-pending',
-    PENDING:        'badge-pending',
-    UNDER_REVIEW:   'badge-pending',
-    INTERVIEWING:   'badge-interviewing',
-    REJECTED:       'badge-rejected',
-    POSITION_FILLED:'badge-rejected',
-    CLOSED:         'badge-rejected',
-    SUSPENDED:      'badge-rejected'
+    APPROVED: 'badge-approved', ACTIVE: 'badge-approved',
+    SUBMITTED: 'badge-pending', PENDING: 'badge-pending',
+    UNDER_REVIEW: 'badge-pending', INTERVIEWING: 'badge-interviewing',
+    REJECTED: 'badge-rejected', POSITION_FILLED: 'badge-rejected',
+    CLOSED: 'badge-rejected', SUSPENDED: 'badge-rejected'
   };
-  const label = (typeof Lang !== 'undefined' ? Lang.t('status_' + status) : null) || status;
-  return `<span class="badge-status ${classes[status] || 'badge-pending'}">${escapeHtml(label)}</span>`;
-}
-
-function spinner() {
-  return '<div class="spinner"></div>';
-}
-
-function emptyState(message, linkText, linkHref) {
-  return `
-    <div class="empty-state">
-      <div style="font-size:2.5rem;margin-bottom:1rem;">📭</div>
-      <p>${escapeHtml(message)}</p>
-      ${linkText ? `<a href="${linkHref}" style="margin-top:0.75rem;display:inline-block;">${escapeHtml(linkText)}</a>` : ''}
-    </div>
-  `;
+  const labels = {
+    SUBMITTED: 'Soumise', UNDER_REVIEW: 'En révision',
+    INTERVIEWING: 'Entretien', APPROVED: 'Approuvée',
+    REJECTED: 'Rejetée', POSITION_FILLED: 'Poste pourvu',
+    PENDING: 'En attente', CLOSED: 'Fermée',
+    ACTIVE: 'Actif', SUSPENDED: 'Suspendu'
+  };
+  const label = labels[status] || status;
+  return `<span class="badge-status ${classes[status] || 'badge-pending'}">${label}</span>`;
 }

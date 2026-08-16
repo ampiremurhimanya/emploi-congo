@@ -12,34 +12,22 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <!-- NAVBAR -->
     <nav class="navbar-ec">
       <a href="index.html" class="brand">Emploi<span>Congo</span></a>
       <div class="nav-links">
-        <a href="index.html" class="nav-link active" data-i18n="findJobs"
-          >Trouver un emploi</a
-        >
-        <a href="find-jobs.html" class="nav-link" data-i18n="findJobs"
-          >Offres</a
-        >
-        <a
-          href="register.html?role=COMPANY"
-          class="nav-link"
-          data-i18n="postJob"
+        <a href="index.html" class="nav-link active">Accueil</a>
+        <a href="find-jobs.html" class="nav-link">Offres d'emploi</a>
+        <a href="register.html?role=COMPANY" class="nav-link"
           >Publier une offre</a
         >
       </div>
       <div id="navAuthArea"></div>
     </nav>
 
-    <!-- HERO -->
     <section class="hero">
       <div class="hero-content">
-        <h1>
-          Votre carrière
-          <span data-i18n="heroTitleHighlight">commence ici</span>
-        </h1>
-        <p data-i18n="heroSubtitle">
+        <h1>Votre carrière <span>commence ici</span></h1>
+        <p>
           Connecter les talents congolais avec les meilleures opportunités
           locales et internationales.
         </p>
@@ -48,7 +36,6 @@
             type="text"
             id="heroKeyword"
             class="form-control"
-            data-i18n-placeholder="searchPlaceholder"
             placeholder="Titre du poste, mots-clés..."
           />
           <select id="heroField" class="form-select" style="max-width: 220px">
@@ -70,42 +57,28 @@
             <option value="Droit & Juridique">⚖️ Droit & Juridique</option>
             <option value="Autre">Autre</option>
           </select>
-          <button
-            class="btn btn-gold"
-            onclick="doSearch()"
-            data-i18n="searchBtn"
-          >
-            Rechercher
-          </button>
+          <button class="btn btn-gold" onclick="doSearch()">Rechercher</button>
         </div>
       </div>
     </section>
 
-    <!-- STATS -->
     <section class="stats-banner">
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-number" id="statOpps">—</div>
-          <div class="stat-label" data-i18n="activeOpportunities">
-            Offres actives
-          </div>
+          <div class="stat-label">Offres actives</div>
         </div>
         <div class="stat-item">
           <div class="stat-number" id="statCompanies">—</div>
-          <div class="stat-label" data-i18n="partnerCompanies">
-            Sociétés partenaires
-          </div>
+          <div class="stat-label">Sociétés partenaires</div>
         </div>
         <div class="stat-item">
           <div class="stat-number" id="statStudents">—</div>
-          <div class="stat-label" data-i18n="registeredStudents">
-            Étudiants inscrits
-          </div>
+          <div class="stat-label">Étudiants inscrits</div>
         </div>
       </div>
     </section>
 
-    <!-- LATEST OPPORTUNITIES -->
     <section class="section">
       <div class="container">
         <div
@@ -113,127 +86,123 @@
           style="flex-wrap: wrap; gap: 1rem"
         >
           <div>
-            <h2 class="section-title" data-i18n="latestOpportunities">
-              Dernières opportunités
-            </h2>
-            <p class="section-sub" data-i18n="latestSubtitle">
+            <h2 class="section-title">Dernières opportunités</h2>
+            <p class="section-sub">
               Offres vérifiées publiées par notre équipe.
             </p>
           </div>
-          <a
-            href="find-jobs.html"
-            class="btn btn-outline-dark"
-            data-i18n="viewAll"
-            >Voir tout →</a
-          >
+          <a href="find-jobs.html" class="btn btn-outline-dark">Voir tout →</a>
         </div>
         <div id="latestList"><div class="spinner"></div></div>
       </div>
     </section>
 
-    <!-- ROLE CARDS -->
     <section
       class="section"
       style="background: #fff; padding-top: 3rem; padding-bottom: 3rem"
     >
       <div class="container">
-        <h2 class="section-title text-center mb-2" data-i18n="tailoredTitle">
-          Une plateforme pour tous
-        </h2>
-        <p class="section-sub text-center" data-i18n="tailoredSubtitle">
+        <h2 class="section-title text-center mb-2">Une plateforme pour tous</h2>
+        <p class="section-sub text-center">
           Étudiants, entreprises et ONG — une seule plateforme.
         </p>
         <div class="grid-3 mt-3">
           <div class="card card-body">
             <div style="font-size: 2.5rem; margin-bottom: 1rem">🎓</div>
-            <h5 class="fw-black mb-2" data-i18n="forStudents">
-              Pour les étudiants
-            </h5>
+            <h5 class="fw-black mb-2">Pour les étudiants</h5>
             <ul
-              id="studentFeatures"
               style="list-style: none; color: var(--muted); font-size: 0.9rem"
-            ></ul>
+            >
+              <li style="padding: 0.3rem 0">
+                ✓ Candidature en un clic avec votre profil
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Suivi de vos candidatures en temps réel
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Offres vérifiées de sociétés congolaises et internationales
+              </li>
+            </ul>
             <div class="mt-3">
               <a
                 href="register.html?role=STUDENT"
                 class="btn btn-navy btn-block"
-                data-i18n="getStarted"
+                >Commencer</a
               >
-                Commencer
-              </a>
             </div>
           </div>
           <div class="card card-body" style="border: 2px solid var(--gold)">
             <div style="font-size: 2.5rem; margin-bottom: 1rem">🏢</div>
-            <h5 class="fw-black mb-2" data-i18n="forCompanies">
-              Pour les entreprises & ONG
-            </h5>
+            <h5 class="fw-black mb-2">Pour les entreprises & ONG</h5>
             <ul
-              id="companyFeatures"
               style="list-style: none; color: var(--muted); font-size: 0.9rem"
-            ></ul>
+            >
+              <li style="padding: 0.3rem 0">
+                ✓ Accès aux meilleurs talents congolais
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Gestion simplifiée des candidatures
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Visibilité auprès de milliers d'étudiants
+              </li>
+            </ul>
             <div class="mt-3">
               <a
                 href="register.html?role=COMPANY"
                 class="btn btn-gold btn-block"
-                data-i18n="postOpening"
+                >Publier une offre</a
               >
-                Publier une offre
-              </a>
             </div>
           </div>
           <div class="card card-body">
             <div style="font-size: 2.5rem; margin-bottom: 1rem">🛡️</div>
-            <h5 class="fw-black mb-2" data-i18n="forAdmin">
-              Pour l'administration
-            </h5>
+            <h5 class="fw-black mb-2">Pour l'administration</h5>
             <ul
-              id="adminFeatures"
               style="list-style: none; color: var(--muted); font-size: 0.9rem"
-            ></ul>
+            >
+              <li style="padding: 0.3rem 0">
+                ✓ Validation des offres publiées
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Gestion complète des utilisateurs
+              </li>
+              <li style="padding: 0.3rem 0">
+                ✓ Rapports et statistiques détaillés
+              </li>
+            </ul>
             <div class="mt-3">
-              <a
-                href="login.html"
-                class="btn btn-outline-dark btn-block"
-                data-i18n="adminDashboard"
+              <a href="login.html" class="btn btn-outline-dark btn-block"
+                >Tableau de bord admin</a
               >
-                Tableau de bord admin
-              </a>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="section">
       <div class="container">
         <div class="cta-section">
-          <h2 data-i18n="ctaTitle">Prêt à faire le grand saut ?</h2>
-          <p data-i18n="ctaSubtitle">
+          <h2>Prêt à faire le grand saut ?</h2>
+          <p>
             Rejoignez des milliers d'étudiants et d'entreprises qui façonnent
             l'avenir du Congo.
           </p>
           <div class="d-flex gap-2 justify-center flex-wrap">
-            <a
-              href="register.html"
-              class="btn btn-gold btn-lg"
-              data-i18n="createAccount"
+            <a href="register.html" class="btn btn-gold btn-lg"
               >Créer un compte</a
             >
             <a
               href="mailto:contact@emploicongo.cd"
               class="btn btn-outline-light btn-lg"
-              data-i18n="contactUs"
+              >Nous contacter</a
             >
-              Nous contacter
-            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="footer">
       <div
         class="container d-flex justify-between align-center flex-wrap"
@@ -256,10 +225,6 @@
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
     <script>
-      // Init language
-      Lang.init();
-
-      // Load stats
       Api.get("/opportunities/stats")
         .then((data) => {
           document.getElementById("statOpps").textContent =
@@ -271,14 +236,12 @@
         })
         .catch(() => {});
 
-      // Load latest opportunities
       Api.get("/opportunities/public/latest?limit=6")
         .then((list) => {
           const el = document.getElementById("latestList");
           if (!list || list.length === 0) {
-            el.innerHTML = emptyState(
-              "Aucune opportunité disponible pour le moment.",
-            );
+            el.innerHTML = `<div class="empty-state"><span class="empty-icon">📭</span>
+        <p>Aucune opportunité disponible pour le moment.</p></div>`;
             return;
           }
           el.innerHTML =
@@ -295,43 +258,25 @@
                 ${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "")}
               </div>
               <div class="text-small mt-1" style="color:var(--muted);">
-                <span data-i18n="deadline">Date limite</span>: ${formatDate(o.application_deadline)}
+                Date limite : ${formatDate(o.application_deadline)}
               </div>
             </div>
           </div>
           <div class="d-flex gap-2 align-center flex-wrap">
             <span class="badge-status badge-approved">Approuvée</span>
-            <a href="find-jobs.html" class="btn btn-navy btn-sm" data-i18n="applyNow">Postuler</a>
+            <a href="find-jobs.html" class="btn btn-navy btn-sm">Postuler</a>
           </div>
-        </div>
-      `,
+        </div>`,
               )
               .join("") +
             `</div>`;
         })
         .catch(() => {
-          document.getElementById("latestList").innerHTML = emptyState(
-            "Impossible de charger les offres. Vérifiez que le serveur est démarré.",
-          );
+          document.getElementById("latestList").innerHTML =
+            `<div class="empty-state"><span class="empty-icon">⚠️</span>
+       <p>Impossible de charger les offres. Vérifiez que le serveur est démarré.</p></div>`;
         });
 
-      // Fill role card features
-      function fillFeatures(id, key) {
-        const items = Lang.t(key);
-        if (Array.isArray(items)) {
-          document.getElementById(id).innerHTML = items
-            .map(
-              (f) =>
-                `<li style="padding:0.3rem 0;display:flex;align-items:flex-start;gap:0.5rem;"><span style="color:var(--success);font-weight:800;">✓</span>${escapeHtml(f)}</li>`,
-            )
-            .join("");
-        }
-      }
-      fillFeatures("studentFeatures", "forStudentsDesc");
-      fillFeatures("companyFeatures", "forCompaniesDesc");
-      fillFeatures("adminFeatures", "forAdminDesc");
-
-      // Search
       function doSearch() {
         const keyword = document.getElementById("heroKeyword").value.trim();
         const field = document.getElementById("heroField").value;

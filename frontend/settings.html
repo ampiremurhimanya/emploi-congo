@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmploiCongo — Paramètres</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar-ec">
+      <a href="index.html" class="brand">Emploi<span>Congo</span></a>
+      <div class="nav-links">
+        <a href="find-jobs.html" class="nav-link">Offres d'emploi</a>
+      </div>
+      <div id="navAuthArea"></div>
+    </nav>
+
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidebar-brand">Paramètres</div>
+        <div class="sidebar-sub">Mon compte</div>
+        <nav class="sidebar-nav">
+          <a
+            href="#"
+            class="sidebar-link active"
+            onclick="showSection('profile', this)"
+          >
+            <span class="icon">👤</span> Mon profil
+          </a>
+          <a
+            href="#"
+            class="sidebar-link"
+            onclick="showSection('security', this)"
+          >
+            <span class="icon">🔒</span> Sécurité
+          </a>
+          <a href="#" class="sidebar-link" onclick="showSection('about', this)">
+            <span class="icon">ℹ️</span> À propos
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="btn btn-danger btn-block" onclick="Api.logout()">
+            Se déconnecter
+          </button>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <!-- PROFILE -->
+        <div id="section-profile">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            Mon profil
+          </h2>
+          <p class="text-muted mb-4">
+            Informations de votre compte EmploiCongo.
+          </p>
+          <div class="card" style="max-width: 580px">
+            <div class="card-body">
+              <div id="profileInfo"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div id="section-security" style="display: none">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            Sécurité
+          </h2>
+          <p class="text-muted mb-4">
+            Informations sur la sécurité de votre compte.
+          </p>
+          <div class="card" style="max-width: 580px">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3">Changer le mot de passe</h5>
+              <div class="form-notice mb-4">
+                🔒 Pour changer votre mot de passe, déconnectez-vous et utilisez
+                l'option "Mot de passe oublié" sur la page de connexion. Cette
+                fonctionnalité sera disponible dans la prochaine version.
+              </div>
+
+              <h5 class="fw-bold mb-2 mt-3">Informations de sécurité</h5>
+              <div class="d-flex flex-col gap-2">
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div>
+                    <div class="fw-bold text-small">Protection brute force</div>
+                    <div class="text-xs text-muted">
+                      Max 5 tentatives de connexion par minute
+                    </div>
+                  </div>
+                  <span class="badge-status badge-approved">ACTIF</span>
+                </div>
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div>
+                    <div class="fw-bold text-small">
+                      Chiffrement du mot de passe
+                    </div>
+                    <div class="text-xs text-muted">
+                      BCrypt avec 12 rounds de hachage
+                    </div>
+                  </div>
+                  <span class="badge-status badge-approved">ACTIF</span>
+                </div>
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div>
+                    <div class="fw-bold text-small">Authentification JWT</div>
+                    <div class="text-xs text-muted">
+                      Session valide 24 heures
+                    </div>
+                  </div>
+                  <span class="badge-status badge-approved">ACTIF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABOUT -->
+        <div id="section-about" style="display: none">
+          <h2
+            class="fw-black mb-1"
+            style="font-size: 1.7rem; color: var(--navy)"
+          >
+            À propos
+          </h2>
+          <p class="text-muted mb-4">Informations sur la plateforme.</p>
+          <div class="card" style="max-width: 580px">
+            <div class="card-body">
+              <div class="text-center mb-4">
+                <div
+                  style="
+                    font-size: 2.5rem;
+                    font-weight: 900;
+                    color: var(--navy);
+                  "
+                >
+                  Emploi<span style="color: var(--gold-dark)">Congo</span>
+                </div>
+                <div class="text-muted mt-1">Version 1.0.0</div>
+              </div>
+              <div class="d-flex flex-col gap-2">
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <span class="fw-bold text-small">Mission</span>
+                  <span class="text-small text-muted"
+                    >Connecter les talents congolais</span
+                  >
+                </div>
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <span class="fw-bold text-small">Langue</span>
+                  <span class="text-small text-muted">Français</span>
+                </div>
+
+                <div
+                  class="d-flex justify-between p-3"
+                  style="
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <span class="fw-bold text-small">Contact</span>
+                  <span class="text-small text-muted"
+                    >contact@emploicongo.cd</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+      const user = Api.currentUser();
+      if (!user) window.location.href = "login.html";
+
+      function showSection(name, link) {
+        ["profile", "security", "about"].forEach((s) => {
+          document.getElementById("section-" + s).style.display =
+            s === name ? "" : "none";
+        });
+        document
+          .querySelectorAll(".sidebar-link")
+          .forEach((l) => l.classList.remove("active"));
+        if (link) link.classList.add("active");
+      }
+
+      async function loadProfile() {
+        const el = document.getElementById("profileInfo");
+        try {
+          let profile;
+          if (user.role === "STUDENT") {
+            profile = await Api.get("/student/profile");
+          } else {
+            profile = user;
+          }
+
+          const name = profile.full_name || profile.fullName || "?";
+          const email = profile.email || "?";
+          const role = profile.role || user.role;
+
+          el.innerHTML = `
+        <div class="d-flex align-center gap-3 mb-4">
+          <div class="company-logo" style="width:60px;height:60px;font-size:1.5rem;">
+            ${name[0].toUpperCase()}
+          </div>
+          <div>
+            <div class="fw-black" style="font-size:1.15rem;">${escapeHtml(name)}</div>
+            <div class="text-muted text-small">${escapeHtml(email)}</div>
+            <span class="badge-status ${
+              role === "STUDENT"
+                ? "badge-approved"
+                : role === "COMPANY"
+                  ? "badge-interviewing"
+                  : "badge-pending"
+            }" style="margin-top:0.4rem;display:inline-block;">${role}</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="d-flex flex-col gap-2 mt-3">
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Email</span>
+            <span class="text-small text-muted">${escapeHtml(email)}</span>
+          </div>
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Rôle</span>
+            <span class="text-small text-muted">${escapeHtml(role)}</span>
+          </div>
+          ${
+            profile.degree_program
+              ? `
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Programme</span>
+            <span class="text-small text-muted">${escapeHtml(profile.degree_program)}</span>
+          </div>`
+              : ""
+          }
+          ${
+            profile.field_of_study
+              ? `
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Domaine</span>
+            <span class="text-small text-muted">${escapeHtml(profile.field_of_study)}</span>
+          </div>`
+              : ""
+          }
+          ${
+            profile.company_name
+              ? `
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Société</span>
+            <span class="text-small text-muted">${escapeHtml(profile.company_name)}</span>
+          </div>`
+              : ""
+          }
+          <div class="d-flex justify-between p-3"
+            style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <span class="fw-bold text-small">Membre depuis</span>
+            <span class="text-small text-muted">${formatDate(profile.created_at)}</span>
+          </div>
+          ${
+            profile.cv_original_name
+              ? `
+          <div class="d-flex justify-between align-center p-3"
+            style="background:var(--success-bg);border-radius:10px;
+            border:1px solid var(--success-border);">
+            <div>
+              <div class="fw-bold text-small text-success">CV actuel</div>
+              <div class="text-xs text-muted">${escapeHtml(profile.cv_original_name)}</div>
+            </div>
+            <span class="badge-status badge-approved">✅ Téléchargé</span>
+          </div>`
+              : `
+          <div class="d-flex justify-between align-center p-3"
+            style="background:var(--warning-bg);border-radius:10px;
+            border:1px solid var(--warning-border);">
+            <div class="fw-bold text-small" style="color:var(--warning);">
+              ⚠️ Aucun CV téléchargé
+            </div>
+            ${
+              user.role === "STUDENT"
+                ? `<a href="student-dashboard.html" class="btn btn-navy btn-sm">
+                Télécharger
+              </a>`
+                : ""
+            }
+          </div>`
+          }
+        </div>
+      `;
+        } catch (err) {
+          el.innerHTML = `
+        <div style="color:var(--danger);padding:1rem;">
+          Impossible de charger le profil : ${escapeHtml(err.message)}
+        </div>`;
+        }
+      }
+
+      loadProfile();
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EmploiCongo — Trouver un emploi</title>
+    <title>EmploiCongo — Offres d'emploi</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -19,7 +19,6 @@
       <div id="navAuthArea"></div>
     </nav>
 
-    <!-- FILTER BAR -->
     <div
       style="
         background: #fff;
@@ -76,10 +75,9 @@
       <div class="d-flex justify-between align-center mb-3 flex-wrap gap-2">
         <div>
           <h2 class="section-title">Offres d'emploi</h2>
-          <p class="text-muted text-small" id="resultsCount">Chargement...</p>
+          <p class="text-muted text-small" id="resultsCount"></p>
         </div>
       </div>
-
       <div id="resultsList"><div class="spinner"></div></div>
       <div class="pagination" id="pagination"></div>
     </div>
@@ -120,13 +118,10 @@
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
     <script>
-      Lang.init();
-
       let currentPage = 0;
       let pendingOpportunityId = null;
       const user = Api.currentUser();
 
-      // Read URL params
       const params = new URLSearchParams(window.location.search);
       if (params.get("keyword"))
         document.getElementById("fKeyword").value = params.get("keyword");
@@ -156,7 +151,7 @@
       function renderCard(o) {
         const isStudent = user && user.role === "STUDENT";
         const deadline = o.application_deadline
-          ? `<span class="text-small text-muted">📅 Date limite: ${formatDate(o.application_deadline)}</span>`
+          ? `<span class="text-small text-muted">📅 Date limite : ${formatDate(o.application_deadline)}</span>`
           : "";
         const salary = o.salary_range
           ? `<span class="opp-tag">💰 ${escapeHtml(o.salary_range)}</span>`
@@ -175,11 +170,9 @@
           actions = `
         <button class="btn btn-outline-dark btn-sm save-btn" data-id="${o.id}">☆ Sauvegarder</button>
         <button class="btn btn-navy btn-sm apply-btn"
-          data-id="${o.id}"
-          data-title="${escapeHtml(o.title)}">
+          data-id="${o.id}" data-title="${escapeHtml(o.title)}">
           Postuler
-        </button>
-      `;
+        </button>`;
         } else {
           actions = `<a href="login.html" class="btn btn-outline-dark btn-sm">Postuler</a>`;
         }
@@ -204,8 +197,7 @@
         <div class="d-flex flex-col gap-2 align-center" style="flex-shrink:0;">
           ${actions}
         </div>
-      </div>
-    `;
+      </div>`;
       }
 
       function renderPagination(data) {
@@ -214,8 +206,7 @@
           el.innerHTML = "";
           return;
         }
-        let html = "";
-        html += `<button class="page-btn" onclick="search(${data.number - 1})"
+        let html = `<button class="page-btn" onclick="search(${data.number - 1})"
       ${data.number === 0 ? "disabled" : ""}>←</button>`;
         for (let i = 0; i < data.totalPages; i++) {
           html += `<button class="page-btn ${i === data.number ? "active" : ""}"
@@ -231,34 +222,29 @@
         const list = document.getElementById("resultsList");
         list.innerHTML = '<div class="spinner"></div>';
         document.getElementById("resultsCount").textContent = "Chargement...";
-
         try {
           const data = await Api.get(
             "/opportunities/public/search?" + buildQuery(page),
           );
           document.getElementById("resultsCount").textContent =
             `${data.totalElements} offre(s) trouvée(s)`;
-
           if (!data.content || data.content.length === 0) {
-            list.innerHTML = `
-          <div class="empty-state">
-            <span class="empty-icon">🔍</span>
-            <p>Aucune opportunité ne correspond à votre recherche.</p>
-            <p class="text-small mt-2">Essayez des mots-clés différents ou effacez les filtres.</p>
-          </div>`;
+            list.innerHTML = `<div class="empty-state">
+          <span class="empty-icon">🔍</span>
+          <p>Aucune opportunité ne correspond à votre recherche.</p>
+          <p class="text-small mt-2">Essayez des mots-clés différents ou effacez les filtres.</p>
+        </div>`;
             document.getElementById("pagination").innerHTML = "";
             return;
           }
-
           list.innerHTML = `<div class="opp-card-list">${data.content.map(renderCard).join("")}</div>`;
           renderPagination(data);
           wireActions();
         } catch (err) {
-          list.innerHTML = `
-        <div class="empty-state">
-          <span class="empty-icon">⚠️</span>
-          <p>${escapeHtml(err.message)}</p>
-        </div>`;
+          list.innerHTML = `<div class="empty-state">
+        <span class="empty-icon">⚠️</span>
+        <p>${escapeHtml(err.message)}</p>
+      </div>`;
         }
       }
 
@@ -276,7 +262,6 @@
             document.getElementById("applyModal").style.display = "flex";
           });
         });
-
         document.querySelectorAll(".save-btn").forEach((btn) => {
           btn.addEventListener("click", async () => {
             try {
@@ -305,7 +290,6 @@
         const note = document.getElementById("coverNote").value.trim();
         btn.disabled = true;
         btn.textContent = "Envoi...";
-
         try {
           await Api.post(`/student/applications/${pendingOpportunityId}`, {
             coverNote: note,
@@ -321,7 +305,6 @@
         }
       }
 
-      // Enter key on filters
       ["fKeyword", "fCompany"].forEach((id) => {
         document.getElementById(id).addEventListener("keydown", (e) => {
           if (e.key === "Enter") search(0);
@@ -330,7 +313,6 @@
       document
         .getElementById("fField")
         .addEventListener("change", () => search(0));
-
       search(0);
     </script>
   </body>

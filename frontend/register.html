@@ -17,7 +17,6 @@
         <div class="auth-logo">Emploi<span>Congo</span></div>
         <div class="auth-subtitle">Rejoignez la communauté EmploiCongo</div>
 
-        <!-- Role selector -->
         <div class="role-toggle">
           <button
             class="role-btn active"
@@ -33,7 +32,6 @@
 
         <div class="form-error" id="errorBox"></div>
 
-        <!-- Common fields -->
         <div class="form-group">
           <label class="form-label">Nom complet *</label>
           <input
@@ -68,7 +66,6 @@
           />
         </div>
 
-        <!-- Student fields -->
         <div id="studentFields">
           <div class="form-group">
             <label class="form-label">Programme d'études</label>
@@ -97,7 +94,6 @@
           </div>
         </div>
 
-        <!-- Company fields -->
         <div id="companyFields" style="display: none">
           <div class="form-group">
             <label class="form-label">Nom de la société / ONG *</label>
@@ -127,13 +123,12 @@
               id="companyDescription"
               class="form-control"
               rows="3"
-              placeholder="Décrivez brièvement votre organisation, votre secteur d'activité..."
+              placeholder="Décrivez brièvement votre organisation..."
             ></textarea>
           </div>
           <div class="form-notice">
             ⚠️ Les comptes entreprise sont vérifiés par notre équipe avant la
-            publication d'offres. Vos annonces seront soumises à validation
-            administrative. Délai : 24-48 heures.
+            publication d'offres. Délai de traitement : 24-48 heures.
           </div>
         </div>
 
@@ -168,15 +163,11 @@
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
     <script>
-      Lang.init();
-
       let currentRole = "STUDENT";
 
-      // Pre-select role from URL param
       const urlRole = new URLSearchParams(window.location.search).get("role");
       if (urlRole === "COMPANY") setRole("COMPANY");
 
-      // Redirect if already logged in
       const existing = Api.currentUser();
       if (existing) {
         const map = {
@@ -230,7 +221,6 @@
             .value.trim();
         }
 
-        // Validation
         if (!payload.fullName) {
           errorBox.textContent = "Veuillez entrer votre nom complet.";
           errorBox.classList.add("show");
@@ -259,17 +249,12 @@
         try {
           const data = await Api.post("/auth/register", payload);
           Api.setSession(data);
-
+          showToast("Compte créé avec succès ! Bienvenue sur EmploiCongo 🎉");
           const dashMap = {
             STUDENT: "student-dashboard.html",
             COMPANY: "company-dashboard.html",
             ADMIN: "admin-dashboard.html",
           };
-
-          showToast(
-            "Compte créé avec succès ! Bienvenue sur EmploiCongo 🎉",
-            "success",
-          );
           setTimeout(() => {
             window.location.href = dashMap[data.role] || "index.html";
           }, 1000);
@@ -281,7 +266,6 @@
         }
       }
 
-      // Allow Enter key to submit
       document.addEventListener("keydown", (e) => {
         if (e.key === "Enter") doRegister();
       });

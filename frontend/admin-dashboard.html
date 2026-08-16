@@ -18,7 +18,6 @@
     </nav>
 
     <div class="layout">
-      <!-- SIDEBAR -->
       <div class="sidebar">
         <div class="sidebar-brand">Administration</div>
         <div class="sidebar-sub">EmploiCongo</div>
@@ -52,12 +51,14 @@
           <a href="#" class="sidebar-link" onclick="showTab('users', this)">
             <span class="icon">👥</span> Utilisateurs
           </a>
+          <a href="settings.html" class="sidebar-link">
+            <span class="icon">⚙️</span> Paramètres
+          </a>
         </nav>
       </div>
 
-      <!-- MAIN -->
       <div class="main-content">
-        <!-- TAB: OVERVIEW -->
+        <!-- OVERVIEW -->
         <div id="tab-overview">
           <h2
             class="fw-black mb-1"
@@ -80,11 +81,11 @@
               <div class="stat-value" id="statActive">—</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Étudiants</div>
+              <div class="stat-label">🎓 Étudiants</div>
               <div class="stat-value" id="statStudents">—</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Entreprises</div>
+              <div class="stat-label">🏢 Entreprises</div>
               <div class="stat-value" id="statCompanies">—</div>
             </div>
           </div>
@@ -121,7 +122,7 @@
           </div>
         </div>
 
-        <!-- TAB: APPROVALS -->
+        <!-- APPROVALS -->
         <div id="tab-approvals" style="display: none">
           <h2
             class="fw-black mb-1"
@@ -130,13 +131,12 @@
             Offres en attente
           </h2>
           <p class="text-muted mb-4">
-            Examinez et approuvez ou rejetez les offres soumises par les
-            entreprises.
+            Examinez et approuvez ou rejetez les offres soumises.
           </p>
           <div id="pendingList"><div class="spinner"></div></div>
         </div>
 
-        <!-- TAB: INTERNAL POST -->
+        <!-- INTERNAL POST -->
         <div id="tab-internal" style="display: none">
           <h2
             class="fw-black mb-1"
@@ -145,14 +145,13 @@
             Publication directe
           </h2>
           <p class="text-muted mb-4">
-            Publiez directement des offres reçues par email, WhatsApp ou
-            recommandées par des partenaires. Ces offres sont immédiatement
-            visibles sans validation.
+            Publiez directement des offres reçues par email ou recommandées par
+            des partenaires. Ces offres sont immédiatement visibles sans
+            validation.
           </p>
           <div class="card" style="max-width: 680px">
             <div class="card-body">
               <div class="form-error" id="internalError"></div>
-
               <div class="form-group">
                 <label class="form-label">Nom de la société / ONG *</label>
                 <input
@@ -175,16 +174,24 @@
                 <label class="form-label">Domaine *</label>
                 <select id="iField" class="form-select">
                   <option value="">Sélectionnez un domaine</option>
-                  <option>Informatique & Développement</option>
-                  <option>Finance & Comptabilité</option>
-                  <option>Marketing & Communication</option>
-                  <option>Ressources Humaines</option>
-                  <option>Humanitaire & ONG</option>
-                  <option>Ingénierie</option>
-                  <option>Santé</option>
-                  <option>Éducation</option>
-                  <option>Droit & Juridique</option>
-                  <option>Autre</option>
+                  <option value="Informatique & Développement">
+                    Informatique & Développement
+                  </option>
+                  <option value="Finance & Comptabilité">
+                    Finance & Comptabilité
+                  </option>
+                  <option value="Marketing & Communication">
+                    Marketing & Communication
+                  </option>
+                  <option value="Ressources Humaines">
+                    Ressources Humaines
+                  </option>
+                  <option value="Humanitaire & ONG">Humanitaire & ONG</option>
+                  <option value="Ingénierie">Ingénierie</option>
+                  <option value="Santé">Santé</option>
+                  <option value="Éducation">Éducation</option>
+                  <option value="Droit & Juridique">Droit & Juridique</option>
+                  <option value="Autre">Autre</option>
                 </select>
               </div>
               <div class="grid-2">
@@ -230,7 +237,7 @@
                   id="iDesc"
                   class="form-control"
                   rows="4"
-                  placeholder="Décrivez le poste, les responsabilités et les qualifications requises..."
+                  placeholder="Décrivez le poste, les responsabilités..."
                 ></textarea>
               </div>
               <button
@@ -244,7 +251,7 @@
           </div>
         </div>
 
-        <!-- TAB: USERS -->
+        <!-- USERS -->
         <div id="tab-users" style="display: none">
           <div class="d-flex justify-between align-center mb-3 flex-wrap gap-2">
             <div>
@@ -295,7 +302,7 @@
         <button class="modal-close" onclick="closeRejectModal()">✕</button>
         <div class="modal-title">Rejeter l'offre</div>
         <p class="text-muted text-small mb-3">
-          Ce motif sera communiqué à l'entreprise par email.
+          Ce motif sera communiqué à l'entreprise.
         </p>
         <input type="hidden" id="rejectOppId" />
         <div class="form-group">
@@ -322,9 +329,7 @@
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
     <script>
-      Lang.init();
       Api.requireRole("ADMIN");
-
       let searchDebounce;
 
       function showTab(name, link) {
@@ -354,45 +359,37 @@
           document.getElementById("pendingBadge").textContent =
             stats.pendingApprovals;
 
-          // Overview pending
           const pending = await Api.get("/admin/opportunities/pending");
           const pendEl = document.getElementById("overviewPending");
-          if (!pending.length) {
-            pendEl.innerHTML = `
-          <div class="empty-state" style="padding:1.5rem;">
-            <span class="empty-icon">🎉</span>
-            <p>Tout est à jour !</p>
-          </div>`;
-          } else {
-            pendEl.innerHTML = pending.slice(0, 3).map(pendingCard).join("");
-          }
+          pendEl.innerHTML = !pending.length
+            ? `<div class="empty-state" style="padding:1.5rem;">
+             <span class="empty-icon">🎉</span>
+             <p>Tout est à jour !</p>
+           </div>`
+            : pending.slice(0, 3).map(pendingCard).join("");
 
-          // Overview users
           const users = await Api.get("/admin/users?page=0&size=5");
           const usrEl = document.getElementById("overviewUsers");
-          if (!users.content.length) {
-            usrEl.innerHTML = `<div class="empty-state" style="padding:1.5rem;"><p>Aucun utilisateur.</p></div>`;
-          } else {
-            usrEl.innerHTML = users.content
-              .map(
-                (u) => `
-          <div class="d-flex align-center gap-2 mb-2 pb-2"
-            style="border-bottom:1px solid var(--border);">
-            <div class="company-logo" style="width:34px;height:34px;font-size:0.85rem;">
-              ${(u.full_name || "?")[0].toUpperCase()}
-            </div>
-            <div class="flex-1">
-              <div class="fw-bold text-small">${escapeHtml(u.full_name)}</div>
-              <div class="text-xs text-muted">${escapeHtml(u.email)}</div>
-            </div>
-            <span class="badge-status ${u.role === "STUDENT" ? "badge-approved" : "badge-interviewing"}">
-              ${u.role}
-            </span>
-          </div>
-        `,
-              )
-              .join("");
-          }
+          usrEl.innerHTML = !users.content.length
+            ? `<div class="empty-state" style="padding:1.5rem;"><p>Aucun utilisateur.</p></div>`
+            : users.content
+                .map(
+                  (u) => `
+            <div class="d-flex align-center gap-2 mb-2 pb-2"
+              style="border-bottom:1px solid var(--border);">
+              <div class="company-logo" style="width:34px;height:34px;font-size:0.85rem;">
+                ${(u.full_name || "?")[0].toUpperCase()}
+              </div>
+              <div class="flex-1">
+                <div class="fw-bold text-small">${escapeHtml(u.full_name)}</div>
+                <div class="text-xs text-muted">${escapeHtml(u.email)}</div>
+              </div>
+              <span class="badge-status ${u.role === "STUDENT" ? "badge-approved" : "badge-interviewing"}">
+                ${u.role}
+              </span>
+            </div>`,
+                )
+                .join("");
         } catch (err) {
           showToast(err.message, "error");
         }
@@ -409,7 +406,8 @@
               ${escapeHtml(o.company_name)} • ${escapeHtml(o.location || "Non spécifié")}
             </div>
             <p class="text-small mb-2" style="max-width:500px;">
-              ${escapeHtml((o.description || "").slice(0, 140))}${(o.description || "").length > 140 ? "…" : ""}
+              ${escapeHtml((o.description || "").slice(0, 140))}
+              ${(o.description || "").length > 140 ? "…" : ""}
             </p>
             <div class="text-xs text-muted">
               📅 Soumis le ${formatDate(o.created_at)}
@@ -433,15 +431,12 @@
         el.innerHTML = '<div class="spinner"></div>';
         try {
           const list = await Api.get("/admin/opportunities/pending");
-          if (!list.length) {
-            el.innerHTML = `
-          <div class="empty-state">
-            <span class="empty-icon">🎉</span>
-            <p>Aucune offre en attente. Tout est à jour !</p>
-          </div>`;
-            return;
-          }
-          el.innerHTML = `<div class="opp-card-list">${list.map(pendingCard).join("")}</div>`;
+          el.innerHTML = !list.length
+            ? `<div class="empty-state">
+             <span class="empty-icon">🎉</span>
+             <p>Aucune offre en attente. Tout est à jour !</p>
+           </div>`
+            : `<div class="opp-card-list">${list.map(pendingCard).join("")}</div>`;
         } catch (err) {
           el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
         }
@@ -554,7 +549,10 @@
           el.innerHTML = `
         <table class="ec-table">
           <thead>
-            <tr><th>Utilisateur</th><th>Rôle</th><th>Inscrit le</th><th>Statut</th><th>Actions</th></tr>
+            <tr>
+              <th>Utilisateur</th><th>Rôle</th><th>Inscrit le</th>
+              <th>Statut</th><th>Actions</th>
+            </tr>
           </thead>
           <tbody>
             ${data.content
@@ -597,21 +595,21 @@
                     ${
                       u.role === "COMPANY" && !u.verified_company
                         ? `
-                      <button class="btn btn-sm btn-outline-dark" onclick="verifyCompany(${u.id})">
+                      <button class="btn btn-sm btn-outline-dark"
+                        onclick="verifyCompany(${u.id})">
                         🛡️ Vérifier
                       </button>`
                         : ""
                     }
                   </div>
                 </td>
-              </tr>
-            `,
+              </tr>`,
               )
               .join("")}
           </tbody>
         </table>
         <div class="text-xs text-muted p-3">
-          Affichage de ${data.content.length} sur ${data.totalElements} utilisateurs
+          ${data.content.length} / ${data.totalElements} utilisateurs
         </div>`;
         } catch (err) {
           el.innerHTML = `<div class="empty-state"><p>${escapeHtml(err.message)}</p></div>`;
