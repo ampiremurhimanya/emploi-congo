@@ -5,8 +5,8 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 
-// CV upload config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, '../uploads/cvs');
@@ -18,6 +18,7 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname));
   }
 });
+
 const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
@@ -55,7 +56,8 @@ router.post('/cv', requireAuth, requireRole('STUDENT'), upload.single('file'), a
     );
     const result = await pool.query(
       `SELECT id, full_name, email, role, field_of_study, degree_program,
-       cv_file_name, cv_original_name FROM users WHERE id = $1`, [req.user.userId]
+       cv_file_name, cv_original_name FROM users WHERE id = $1`,
+      [req.user.userId]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -71,7 +73,8 @@ router.post('/applications/:opportunityId', requireAuth, requireRole('STUDENT'),
     const studentId = req.user.userId;
 
     const opp = await pool.query(
-      `SELECT * FROM opportunities WHERE id = $1 AND status = 'APPROVED'`, [opportunityId]
+      `SELECT * FROM opportunities WHERE id = $1 AND status = 'APPROVED'`,
+      [opportunityId]
     );
     if (opp.rows.length === 0) {
       return res.status(400).json({ message: 'Cette opportunité n\'est plus disponible.' });
@@ -94,8 +97,7 @@ router.post('/applications/:opportunityId', requireAuth, requireRole('STUDENT'),
 
     const result = await pool.query(`
       INSERT INTO applications (student_id, opportunity_id, cover_note, cv_file_snapshot)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *
+      VALUES ($1, $2, $3, $4) RETURNING *
     `, [studentId, opportunityId, coverNote || null, student.rows[0].cv_file_name]);
 
     res.status(201).json(result.rows[0]);
@@ -159,6 +161,46 @@ router.get('/saved', requireAuth, requireRole('STUDENT'), async (req, res) => {
     `, [req.user.userId]);
     res.json(result.rows);
   } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+// ===== CHANGE PASSWORD =====
+router.post('/change-password', requireAuth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Les deux champs sont obligatoires.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Le nouveau mot de passe doit contenir au moins 6 caractères.' });
+    }
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ message: 'Le nouveau mot de passe doit être différent de l\'ancien.' });
+    }
+
+    const result = await pool.query(
+      'SELECT password FROM users WHERE id = $1', [req.user.userId]
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    const valid = await bcrypt.compare(currentPassword, result.rows[0].password);
+    if (!valid) {
+      return res.status(400).json({ message: 'Mot de passe actuel incorrect.' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await pool.query(
+      'UPDATE users SET password = $1 WHERE id = $2',
+      [hashed, req.user.userId]
+    );
+
+    res.json({ message: 'Mot de passe modifié avec succès.' });
+  } catch (err) {
+    console.error('Change password error:', err.message);
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 });

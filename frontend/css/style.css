@@ -824,3 +824,41 @@ textarea.form-control { resize: vertical; min-height: 95px; }
   .cta-section { padding: 3rem 1.25rem; }
   .cta-section h2 { font-size: 1.6rem; }
 }
+.dev-code-box {
+  background: #f0f9ff;
+  border: 2px solid #0d1e3d;
+  color: #0d1e3d;
+  padding: 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.dev-code-box .code-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.5rem;
+  display: block;
+  margin-top: 0.5rem;
+  color: #0d1e3d;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.modal-box {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow-y: auto;
+  max-height: 85vh;
+}

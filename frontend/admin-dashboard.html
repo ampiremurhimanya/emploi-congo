@@ -363,7 +363,7 @@
           const pendEl = document.getElementById("overviewPending");
           pendEl.innerHTML = !pending.length
             ? `<div class="empty-state" style="padding:1.5rem;">
-             <span class="empty-icon">🎉</span>
+             <span class="empty-icon"> 📊</span>
              <p>Tout est à jour !</p>
            </div>`
             : pending.slice(0, 3).map(pendingCard).join("");
@@ -433,7 +433,7 @@
           const list = await Api.get("/admin/opportunities/pending");
           el.innerHTML = !list.length
             ? `<div class="empty-state">
-             <span class="empty-icon">🎉</span>
+             <span class="empty-icon"> </span>
              <p>Aucune offre en attente. Tout est à jour !</p>
            </div>`
             : `<div class="opp-card-list">${list.map(pendingCard).join("")}</div>`;

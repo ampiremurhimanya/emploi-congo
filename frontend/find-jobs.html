@@ -19,6 +19,7 @@
       <div id="navAuthArea"></div>
     </nav>
 
+    <!-- FILTER BAR -->
     <div
       style="
         background: #fff;
@@ -150,52 +151,190 @@
 
       function renderCard(o) {
         const isStudent = user && user.role === "STUDENT";
-        const deadline = o.application_deadline
-          ? `<span class="text-small text-muted">📅 Date limite : ${formatDate(o.application_deadline)}</span>`
-          : "";
-        const salary = o.salary_range
-          ? `<span class="opp-tag">💰 ${escapeHtml(o.salary_range)}</span>`
-          : "";
-        const type = o.employment_type
-          ? `<span class="opp-tag">${escapeHtml(o.employment_type)}</span>`
-          : "";
-        const verified = o.verified_company
-          ? `<span class="opp-tag" style="color:var(--success);border-color:var(--success-border);">🛡️ Vérifiée</span>`
+
+        // ── Deadline urgency ──────────────────────────
+        let deadlineHtml = "";
+        if (o.application_deadline) {
+          const today = new Date();
+          const deadline = new Date(o.application_deadline);
+          const diffDays = Math.ceil(
+            (deadline - today) / (1000 * 60 * 60 * 24),
+          );
+          let dStyle = "",
+            dLabel = "";
+
+          if (diffDays <= 3) {
+            dStyle =
+              "background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;";
+            dLabel =
+              diffDays === 0
+                ? `Expire aujourd'hui`
+                : `Expire dans ${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+          } else if (diffDays <= 7) {
+            dStyle =
+              "background:#fef3c7;color:#92400e;border:1px solid #fcd34d;";
+            dLabel = `${diffDays} jours restants`;
+          } else {
+            dStyle =
+              "background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;";
+            dLabel = `Clôture le ${formatDate(o.application_deadline)}`;
+          }
+
+          deadlineHtml = `
+        <span style="
+          ${dStyle}
+          padding:0.35em 0.9em;
+          border-radius:999px;
+          font-size:0.78rem;
+          font-weight:700;
+          white-space:nowrap;">
+          ${dLabel}
+        </span>`;
+        }
+
+        // ── Contract type ─────────────────────────────
+        const contractHtml = o.employment_type
+          ? `
+      <span style="
+        background:#f1f5f9;color:#334155;
+        border:1px solid #e2e8f0;
+        padding:0.35em 0.9em;border-radius:999px;
+        font-size:0.78rem;font-weight:700;">
+        ${escapeHtml(o.employment_type)}
+      </span>`
           : "";
 
+        // ── Salary ────────────────────────────────────
+        const salaryHtml = o.salary_range
+          ? `
+      <span style="
+        background:#f0fdf4;color:#166534;
+        border:1px solid #bbf7d0;
+        padding:0.35em 0.9em;border-radius:999px;
+        font-size:0.78rem;font-weight:700;">
+        ${escapeHtml(o.salary_range)}
+      </span>`
+          : "";
+
+        // ── Verified ──────────────────────────────────
+        const verifiedHtml = o.verified_company
+          ? `
+      <span style="
+        font-size:0.78rem;font-weight:700;color:#166534;">
+        ✓ Vérifiée
+      </span>`
+          : "";
+
+        // ── Actions ───────────────────────────────────
         let actions = "";
         if (!user) {
-          actions = `<a href="login.html" class="btn btn-navy btn-sm">Se connecter pour postuler</a>`;
+          actions = `
+        <a href="login.html" class="btn btn-navy btn-sm">
+          Se connecter pour postuler
+        </a>`;
         } else if (isStudent) {
           actions = `
-        <button class="btn btn-outline-dark btn-sm save-btn" data-id="${o.id}">☆ Sauvegarder</button>
+        <button class="btn btn-outline-dark btn-sm save-btn" data-id="${o.id}">
+          ☆ Sauvegarder
+        </button>
         <button class="btn btn-navy btn-sm apply-btn"
           data-id="${o.id}" data-title="${escapeHtml(o.title)}">
           Postuler
         </button>`;
         } else {
-          actions = `<a href="login.html" class="btn btn-outline-dark btn-sm">Postuler</a>`;
+          actions = `
+        <a href="login.html" class="btn btn-outline-dark btn-sm">
+          Postuler
+        </a>`;
         }
 
-        return `
-      <div class="opp-card">
-        <div class="d-flex gap-3 align-start flex-1">
-          <div class="company-logo">${escapeHtml((o.company_name || "?")[0].toUpperCase())}</div>
-          <div class="flex-1">
-            <div class="fw-black mb-1" style="font-size:1.02rem;">${escapeHtml(o.title)}</div>
-            <div class="text-muted text-small mb-2">
-              ${escapeHtml(o.company_name)} • 📍 ${escapeHtml(o.location || "Non spécifié")}
-            </div>
-            <p class="text-small mb-2" style="color:var(--text);max-width:600px;">
-              ${escapeHtml((o.description || "").slice(0, 160))}${(o.description || "").length > 160 ? "…" : ""}
-            </p>
-            <div class="d-flex flex-wrap gap-2 align-center">
-              ${type}${salary}${verified}${deadline}
-            </div>
-          </div>
+        // ── Description — profil recherché ────────────
+        const descHtml = o.description
+          ? `
+      <div style="margin-top:0.85rem;padding-top:0.85rem;
+        border-top:1px solid #f1f5f9;">
+        <div style="
+          font-size:0.7rem;font-weight:800;
+          text-transform:uppercase;letter-spacing:0.08em;
+          color:#94a3b8;margin-bottom:0.4rem;">
+          Profil recherché
         </div>
-        <div class="d-flex flex-col gap-2 align-center" style="flex-shrink:0;">
-          ${actions}
+        <div style="
+          font-size:0.87rem;color:#334155;
+          line-height:1.7;
+          display:-webkit-box;
+          -webkit-line-clamp:3;
+          -webkit-box-orient:vertical;
+          overflow:hidden;">
+          ${escapeHtml(o.description)}
+        </div>
+      </div>`
+          : "";
+
+        return `
+      <div style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:16px;
+        padding:1.5rem 1.75rem;
+        transition:box-shadow 0.15s,transform 0.15s;
+      "
+      onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)';this.style.transform='translateY(-2px)'"
+      onmouseout="this.style.boxShadow='none';this.style.transform='none'">
+
+        <div class="d-flex gap-4 align-start">
+
+          <!-- Company logo -->
+          <div style="
+            width:52px;height:52px;border-radius:13px;
+            background:var(--navy);color:#fff;
+            font-weight:900;font-size:1.2rem;
+            display:flex;align-items:center;justify-content:center;
+            flex-shrink:0;">
+            ${escapeHtml((o.company_name || "?")[0].toUpperCase())}
+          </div>
+
+          <div style="flex:1;min-width:0;">
+
+            <!-- Row 1: Title + Actions -->
+            <div style="display:flex;justify-content:space-between;
+              align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:0;">
+                <div style="
+                  font-size:1.08rem;font-weight:900;
+                  color:var(--navy);margin-bottom:0.2rem;">
+                  ${escapeHtml(o.title)}
+                </div>
+                <div style="font-size:0.87rem;color:#64748b;">
+                  <span style="font-weight:600;color:#374151;">
+                    ${escapeHtml(o.company_name)}
+                  </span>
+                  &nbsp;·&nbsp;
+                  📍 ${escapeHtml(o.location || "Non spécifié")}
+                  ${verifiedHtml ? `&nbsp;·&nbsp; ${verifiedHtml}` : ""}
+                </div>
+              </div>
+              <div style="
+                display:flex;flex-direction:column;
+                gap:0.5rem;align-items:flex-end;flex-shrink:0;">
+                ${actions}
+              </div>
+            </div>
+
+            <!-- Row 2: Tags -->
+            <div style="
+              display:flex;flex-wrap:wrap;
+              gap:0.5rem;align-items:center;
+              margin-top:0.85rem;">
+              ${contractHtml}
+              ${salaryHtml}
+              ${deadlineHtml}
+            </div>
+
+            <!-- Row 3: Profil recherché -->
+            ${descHtml}
+
+          </div>
         </div>
       </div>`;
       }
@@ -229,22 +368,28 @@
           document.getElementById("resultsCount").textContent =
             `${data.totalElements} offre(s) trouvée(s)`;
           if (!data.content || data.content.length === 0) {
-            list.innerHTML = `<div class="empty-state">
-          <span class="empty-icon">🔍</span>
-          <p>Aucune opportunité ne correspond à votre recherche.</p>
-          <p class="text-small mt-2">Essayez des mots-clés différents ou effacez les filtres.</p>
-        </div>`;
+            list.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">🔍</span>
+            <p>Aucune opportunité ne correspond à votre recherche.</p>
+            <p class="text-small mt-2">
+              Essayez des mots-clés différents ou effacez les filtres.
+            </p>
+          </div>`;
             document.getElementById("pagination").innerHTML = "";
             return;
           }
-          list.innerHTML = `<div class="opp-card-list">${data.content.map(renderCard).join("")}</div>`;
+          list.innerHTML = `<div style="display:flex;flex-direction:column;gap:1rem;">
+        ${data.content.map(renderCard).join("")}
+      </div>`;
           renderPagination(data);
           wireActions();
         } catch (err) {
-          list.innerHTML = `<div class="empty-state">
-        <span class="empty-icon">⚠️</span>
-        <p>${escapeHtml(err.message)}</p>
-      </div>`;
+          list.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">⚠️</span>
+          <p>${escapeHtml(err.message)}</p>
+        </div>`;
         }
       }
 
@@ -262,6 +407,7 @@
             document.getElementById("applyModal").style.display = "flex";
           });
         });
+
         document.querySelectorAll(".save-btn").forEach((btn) => {
           btn.addEventListener("click", async () => {
             try {

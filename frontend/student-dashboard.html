@@ -213,39 +213,152 @@
 
       function appCard(app) {
         const pct = Math.round((app.current_step / app.total_steps) * 100);
+
+        const statusStyles = {
+          SUBMITTED: {
+            bg: "#fef3c7",
+            border: "#fcd34d",
+            color: "#b45309",
+            label: "Soumise",
+          },
+          UNDER_REVIEW: {
+            bg: "#dbeafe",
+            border: "#93c5fd",
+            color: "#1d4ed8",
+            label: "En révision",
+          },
+          INTERVIEWING: {
+            bg: "#ede9fe",
+            border: "#c4b5fd",
+            color: "#7c3aed",
+            label: "Entretien planifié",
+          },
+          APPROVED: {
+            bg: "#dcfce7",
+            border: "#86efac",
+            color: "#15803d",
+            label: "Approuvée",
+          },
+          REJECTED: {
+            bg: "#fee2e2",
+            border: "#fca5a5",
+            color: "#b91c1c",
+            label: "Rejetée",
+          },
+          POSITION_FILLED: {
+            bg: "#f1f5f9",
+            border: "#cbd5e1",
+            color: "#64748b",
+            label: "Poste pourvu",
+          },
+        };
+
+        const s = statusStyles[app.status] || statusStyles["SUBMITTED"];
+
         return `
-      <div class="opp-card mb-2">
-        <div class="d-flex gap-3 align-start flex-1">
-          <div class="company-logo" style="width:40px;height:40px;font-size:0.9rem;">
-            ${(app.company_name || "?")[0].toUpperCase()}
-          </div>
-          <div class="flex-1">
-            <div class="fw-bold mb-1">${escapeHtml(app.opportunity_title)}</div>
-            <div class="text-small text-muted mb-2">
-              ${escapeHtml(app.company_name)} • ${escapeHtml(app.location || "")}
-            </div>
-            <div class="text-xs text-muted mb-2">
-              Postulé le ${formatDate(app.applied_at)}
-            </div>
-            <div class="d-flex justify-between text-xs text-muted mb-1">
-              <span>Progression</span>
-              <span>Étape ${app.current_step} sur ${app.total_steps}</span>
-            </div>
-            <div class="progress" style="max-width:300px;">
-              <div class="progress-bar" style="width:${pct}%"></div>
-            </div>
-            ${
-              app.company_feedback
-                ? `
-              <div class="mt-2 p-3" style="background:#f8fafc;border-radius:8px;font-size:0.85rem;">
-                💬 ${escapeHtml(app.company_feedback)}
-              </div>`
-                : ""
-            }
-          </div>
+    <div style="
+      background:#fff;
+      border:1px solid var(--border);
+      border-left:4px solid ${s.border};
+      border-radius:14px;
+      padding:1.4rem 1.5rem;
+      margin-bottom:1rem;
+      box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    ">
+      <div class="d-flex gap-3 align-start">
+        <div class="company-logo" style="width:44px;height:44px;font-size:1rem;flex-shrink:0;">
+          ${(app.company_name || "?")[0].toUpperCase()}
         </div>
-        <div>${statusBadge(app.status)}</div>
-      </div>`;
+        <div class="flex-1">
+
+          <!-- Title + status -->
+          <div class="d-flex justify-between align-start flex-wrap gap-2 mb-1">
+            <div class="fw-black" style="font-size:1.05rem;color:var(--navy);">
+              ${escapeHtml(app.opportunity_title)}
+            </div>
+            <span style="
+              background:${s.bg};color:${s.color};
+              border:1.5px solid ${s.border};
+              padding:0.3em 0.9em;border-radius:999px;
+              font-weight:800;font-size:0.78rem;
+              letter-spacing:0.03em;white-space:nowrap;">
+              ${s.label}
+            </span>
+          </div>
+
+          <!-- Company and date -->
+          <div class="text-small text-muted mb-1">
+            ${escapeHtml(app.company_name)}
+            ${app.location ? " &nbsp;·&nbsp; " + escapeHtml(app.location) : ""}
+          </div>
+          <div class="text-xs text-muted mb-3">
+            Postulé le ${formatDate(app.applied_at)}
+          </div>
+
+          <!-- Progress -->
+          <div class="d-flex justify-between text-xs text-muted mb-1">
+            <span>Progression</span>
+            <span>Étape ${app.current_step} sur ${app.total_steps}</span>
+          </div>
+          <div style="height:8px;background:#e2e8f0;border-radius:6px;
+            overflow:hidden;max-width:360px;margin-bottom:1rem;">
+            <div style="height:100%;width:${pct}%;
+              background:${s.color};border-radius:6px;
+              transition:width 0.4s ease;"></div>
+          </div>
+
+          <!-- Company feedback -->
+          ${
+            app.company_feedback
+              ? `
+            <div style="
+              border:1px solid ${s.border};
+              border-radius:12px;
+              overflow:hidden;
+              margin-top:0.25rem;
+            ">
+              <!-- Header with company name -->
+              <div style="
+                background:${s.bg};
+                padding:0.6rem 1rem;
+                border-bottom:1px solid ${s.border};
+                display:flex;
+                align-items:center;
+                gap:0.5rem;
+              ">
+                <div style="
+                  width:24px;height:24px;border-radius:50%;
+                  background:${s.color};color:#fff;
+                  font-size:0.7rem;font-weight:900;
+                  display:flex;align-items:center;justify-content:center;
+                ">
+                  ${(app.company_name || "?")[0].toUpperCase()}
+                </div>
+                <span style="font-weight:700;font-size:0.82rem;color:${s.color};">
+                  ${escapeHtml(app.company_name)}
+                </span>
+                <span style="font-size:0.75rem;color:${s.color};opacity:0.7;margin-left:auto;">
+                  Message de l'entreprise
+                </span>
+              </div>
+              <!-- Message body -->
+              <div style="
+                padding:0.9rem 1rem;
+                background:#fff;
+                font-size:0.92rem;
+                line-height:1.65;
+                color:#1e293b;
+              ">
+                ${escapeHtml(app.company_feedback)}
+              </div>
+            </div>
+          `
+              : ""
+          }
+
+        </div>
+      </div>
+    </div>`;
       }
 
       async function loadOverview() {
@@ -258,7 +371,7 @@
           document.getElementById("studentInitial").textContent =
             (profile.full_name || "?")[0].toUpperCase();
           document.getElementById("welcomeMsg").textContent =
-            "Bienvenue, " + (profile.full_name || "").split(" ")[0] + " 👋";
+            "Bienvenue, " + (profile.full_name || "").split(" ")[0] + " ";
 
           let pct = 30;
           if (profile.degree_program) pct += 20;

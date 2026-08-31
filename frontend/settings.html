@@ -72,19 +72,67 @@
           >
             Sécurité
           </h2>
-          <p class="text-muted mb-4">
-            Informations sur la sécurité de votre compte.
-          </p>
-          <div class="card" style="max-width: 580px">
-            <div class="card-body">
-              <h5 class="fw-bold mb-3">Changer le mot de passe</h5>
-              <div class="form-notice mb-4">
-                🔒 Pour changer votre mot de passe, déconnectez-vous et utilisez
-                l'option "Mot de passe oublié" sur la page de connexion. Cette
-                fonctionnalité sera disponible dans la prochaine version.
-              </div>
+          <p class="text-muted mb-4">Gérez la sécurité de votre compte.</p>
 
-              <h5 class="fw-bold mb-2 mt-3">Informations de sécurité</h5>
+          <div class="card mb-4" style="max-width: 520px">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3">🔑 Changer le mot de passe</h5>
+              <div class="form-error" id="pwError"></div>
+              <div
+                id="pwSuccess"
+                style="
+                  display: none;
+                  background: var(--success-bg);
+                  border: 1px solid var(--success-border);
+                  color: var(--success);
+                  padding: 0.8rem 1rem;
+                  border-radius: 9px;
+                  font-weight: 600;
+                  margin-bottom: 1rem;
+                "
+              ></div>
+              <div class="form-group">
+                <label class="form-label">Mot de passe actuel</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  class="form-control"
+                  placeholder="Votre mot de passe actuel"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nouveau mot de passe</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  class="form-control"
+                  placeholder="Au moins 6 caractères"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >Confirmer le nouveau mot de passe</label
+                >
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  class="form-control"
+                  placeholder="Retapez le nouveau mot de passe"
+                />
+              </div>
+              <button
+                class="btn btn-navy btn-block"
+                id="changePwBtn"
+                onclick="changePassword()"
+              >
+                Modifier le mot de passe
+              </button>
+            </div>
+          </div>
+
+          <div class="card" style="max-width: 520px">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3">🛡️ Informations de sécurité</h5>
               <div class="d-flex flex-col gap-2">
                 <div
                   class="d-flex justify-between p-3"
@@ -97,7 +145,7 @@
                   <div>
                     <div class="fw-bold text-small">Protection brute force</div>
                     <div class="text-xs text-muted">
-                      Max 5 tentatives de connexion par minute
+                      Max 5 tentatives par minute
                     </div>
                   </div>
                   <span class="badge-status badge-approved">ACTIF</span>
@@ -111,12 +159,8 @@
                   "
                 >
                   <div>
-                    <div class="fw-bold text-small">
-                      Chiffrement du mot de passe
-                    </div>
-                    <div class="text-xs text-muted">
-                      BCrypt avec 12 rounds de hachage
-                    </div>
+                    <div class="fw-bold text-small">Chiffrement BCrypt</div>
+                    <div class="text-xs text-muted">12 rounds de hachage</div>
                   </div>
                   <span class="badge-status badge-approved">ACTIF</span>
                 </div>
@@ -141,75 +185,67 @@
           </div>
         </div>
 
-        <!-- ABOUT -->
-        <div id="section-about" style="display: none">
-          <h2
-            class="fw-black mb-1"
-            style="font-size: 1.7rem; color: var(--navy)"
-          >
-            À propos
-          </h2>
-          <p class="text-muted mb-4">Informations sur la plateforme.</p>
-          <div class="card" style="max-width: 580px">
-            <div class="card-body">
-              <div class="text-center mb-4">
-                <div
-                  style="
-                    font-size: 2.5rem;
-                    font-weight: 900;
-                    color: var(--navy);
-                  "
-                >
-                  Emploi<span style="color: var(--gold-dark)">Congo</span>
-                </div>
-                <div class="text-muted mt-1">Version 1.0.0</div>
-              </div>
-              <div class="d-flex flex-col gap-2">
-                <div
-                  class="d-flex justify-between p-3"
-                  style="
-                    background: #f8fafc;
-                    border-radius: 10px;
-                    border: 1px solid var(--border);
-                  "
-                >
-                  <span class="fw-bold text-small">Mission</span>
-                  <span class="text-small text-muted"
-                    >Connecter les talents congolais</span
-                  >
-                </div>
-                <div
-                  class="d-flex justify-between p-3"
-                  style="
-                    background: #f8fafc;
-                    border-radius: 10px;
-                    border: 1px solid var(--border);
-                  "
-                >
-                  <span class="fw-bold text-small">Langue</span>
-                  <span class="text-small text-muted">Français</span>
-                </div>
+       <!-- ABOUT -->
+<div id="section-about" style="display:none;">
+  <h2 class="fw-black mb-1" style="font-size:1.7rem;color:var(--navy);">
+    À propos d'EmploiCongo
+  </h2>
+  <p class="text-muted mb-4">Informations sur la plateforme.</p>
+  <div class="card" style="max-width:580px;">
+    <div class="card-body">
 
-                <div
-                  class="d-flex justify-between p-3"
-                  style="
-                    background: #f8fafc;
-                    border-radius: 10px;
-                    border: 1px solid var(--border);
-                  "
-                >
-                  <span class="fw-bold text-small">Contact</span>
-                  <span class="text-small text-muted"
-                    >contact@emploicongo.cd</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="text-center mb-4 p-4"
+        style="background:var(--navy);border-radius:14px;">
+        <div style="font-size:2.2rem;font-weight:900;color:#fff;letter-spacing:-0.02em;">
+          Emploi<span style="color:var(--gold);">Congo</span>
+        </div>
+        <div style="color:rgba(255,255,255,0.55);font-size:0.85rem;margin-top:0.5rem;">
+          Version 1.0.0 &nbsp;·&nbsp; Août 2026
         </div>
       </div>
-    </div>
 
+      <div class="p-3 mb-4"
+        style="background:#f8fafc;border-radius:12px;border:1px solid var(--border);">
+        <p style="color:#374151;font-size:0.95rem;line-height:1.75;margin:0;">
+          EmploiCongo est une plateforme numérique dédiée à la jeunesse
+          congolaise. Notre objectif est de connecter les étudiants et
+          jeunes professionnels de la République Démocratique du Congo
+          avec les meilleures opportunités d'emploi et de stage,
+          locales et internationales.
+        </p>
+      </div>
+
+      <div class="d-flex flex-col gap-2">
+        <div class="d-flex justify-between align-center p-3"
+          style="border-radius:10px;border:1px solid var(--border);">
+          <span class="fw-bold text-small">Pays ciblé</span>
+          <span class="text-small text-muted">République Démocratique du Congo</span>
+        </div>
+        <div class="d-flex justify-between align-center p-3"
+          style="border-radius:10px;border:1px solid var(--border);">
+          <span class="fw-bold text-small">Développeur</span>
+          <span class="text-small text-muted">Ampire Guillaume Murhimanya</span>
+        </div>
+        <div class="d-flex justify-between align-center p-3"
+          style="border-radius:10px;border:1px solid var(--border);">
+          <span class="fw-bold text-small">Contact</span>
+          <span class="text-small text-muted">contact@emploicongo.cd</span>
+        </div>
+        <div class="d-flex justify-between align-center p-3"
+          style="border-radius:10px;border:1px solid var(--border);">
+          <span class="fw-bold text-small">Langue</span>
+          <span class="text-small text-muted">Français</span>
+        </div>
+      </div>
+
+      <div class="text-center mt-4"
+        style="color:var(--muted);font-size:0.8rem;
+        border-top:1px solid var(--border);padding-top:1rem;">
+        © 2026 EmploiCongo. Tous droits réservés.
+      </div>
+    </div>
+  </div>
+</div>
     <script src="js/i18n.js"></script>
     <script src="js/api.js"></script>
     <script src="js/navbar.js"></script>
@@ -228,6 +264,71 @@
         if (link) link.classList.add("active");
       }
 
+      async function changePassword() {
+        const btn = document.getElementById("changePwBtn");
+        const errorBox = document.getElementById("pwError");
+        const successBox = document.getElementById("pwSuccess");
+        const current = document.getElementById("currentPassword").value;
+        const newPw = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+
+        errorBox.classList.remove("show");
+        successBox.style.display = "none";
+
+        if (!current || !newPw || !confirm) {
+          errorBox.textContent = "Veuillez remplir tous les champs.";
+          errorBox.classList.add("show");
+          return;
+        }
+        if (newPw.length < 6) {
+          errorBox.textContent =
+            "Le nouveau mot de passe doit contenir au moins 6 caractères.";
+          errorBox.classList.add("show");
+          return;
+        }
+        if (newPw !== confirm) {
+          errorBox.textContent =
+            "Les deux nouveaux mots de passe ne correspondent pas.";
+          errorBox.classList.add("show");
+          return;
+        }
+        if (current === newPw) {
+          errorBox.textContent =
+            "Le nouveau mot de passe doit être différent de l'ancien.";
+          errorBox.classList.add("show");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Modification...";
+
+        const endpoints = {
+          STUDENT: "/student/change-password",
+          COMPANY: "/company/change-password",
+          ADMIN: "/admin/change-password",
+        };
+
+        try {
+          await Api.post(endpoints[user.role], {
+            currentPassword: current,
+            newPassword: newPw,
+          });
+          successBox.textContent = "✅ Mot de passe modifié avec succès !";
+          successBox.style.display = "block";
+          document.getElementById("currentPassword").value = "";
+          document.getElementById("newPassword").value = "";
+          document.getElementById("confirmPassword").value = "";
+          showToast("Mot de passe modifié. Reconnectez-vous.");
+          setTimeout(() => Api.logout(), 2500);
+        } catch (err) {
+          errorBox.textContent = err.message;
+          errorBox.classList.add("show");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Modifier le mot de passe";
+        }
+      }
+
       async function loadProfile() {
         const el = document.getElementById("profileInfo");
         try {
@@ -242,21 +343,24 @@
           const email = profile.email || "?";
           const role = profile.role || user.role;
 
+          const roleColors = {
+            STUDENT: "badge-approved",
+            COMPANY: "badge-interviewing",
+            ADMIN: "badge-pending",
+          };
+
           el.innerHTML = `
         <div class="d-flex align-center gap-3 mb-4">
-          <div class="company-logo" style="width:60px;height:60px;font-size:1.5rem;">
+          <div class="company-logo" style="width:64px;height:64px;font-size:1.6rem;">
             ${name[0].toUpperCase()}
           </div>
           <div>
-            <div class="fw-black" style="font-size:1.15rem;">${escapeHtml(name)}</div>
+            <div class="fw-black" style="font-size:1.2rem;">${escapeHtml(name)}</div>
             <div class="text-muted text-small">${escapeHtml(email)}</div>
-            <span class="badge-status ${
-              role === "STUDENT"
-                ? "badge-approved"
-                : role === "COMPANY"
-                  ? "badge-interviewing"
-                  : "badge-pending"
-            }" style="margin-top:0.4rem;display:inline-block;">${role}</span>
+            <span class="badge-status ${roleColors[role] || "badge-pending"}"
+              style="margin-top:0.4rem;display:inline-block;">
+              ${role}
+            </span>
           </div>
         </div>
 
@@ -268,11 +372,13 @@
             <span class="fw-bold text-small">Email</span>
             <span class="text-small text-muted">${escapeHtml(email)}</span>
           </div>
+
           <div class="d-flex justify-between p-3"
             style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
             <span class="fw-bold text-small">Rôle</span>
             <span class="text-small text-muted">${escapeHtml(role)}</span>
           </div>
+
           ${
             profile.degree_program
               ? `
@@ -283,6 +389,7 @@
           </div>`
               : ""
           }
+
           ${
             profile.field_of_study
               ? `
@@ -293,6 +400,7 @@
           </div>`
               : ""
           }
+
           ${
             profile.company_name
               ? `
@@ -303,38 +411,49 @@
           </div>`
               : ""
           }
+
+          ${
+            profile.created_at
+              ? `
           <div class="d-flex justify-between p-3"
             style="background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
             <span class="fw-bold text-small">Membre depuis</span>
             <span class="text-small text-muted">${formatDate(profile.created_at)}</span>
-          </div>
+          </div>`
+              : ""
+          }
+
           ${
-            profile.cv_original_name
+            role === "STUDENT"
               ? `
-          <div class="d-flex justify-between align-center p-3"
-            style="background:var(--success-bg);border-radius:10px;
-            border:1px solid var(--success-border);">
-            <div>
-              <div class="fw-bold text-small text-success">CV actuel</div>
-              <div class="text-xs text-muted">${escapeHtml(profile.cv_original_name)}</div>
-            </div>
-            <span class="badge-status badge-approved">✅ Téléchargé</span>
-          </div>`
-              : `
-          <div class="d-flex justify-between align-center p-3"
-            style="background:var(--warning-bg);border-radius:10px;
-            border:1px solid var(--warning-border);">
-            <div class="fw-bold text-small" style="color:var(--warning);">
-              ⚠️ Aucun CV téléchargé
-            </div>
             ${
-              user.role === "STUDENT"
-                ? `<a href="student-dashboard.html" class="btn btn-navy btn-sm">
+              profile.cv_original_name
+                ? `
+            <div class="d-flex justify-between align-center p-3"
+              style="background:var(--success-bg);border-radius:10px;
+              border:1px solid var(--success-border);">
+              <div>
+                <div class="fw-bold text-small text-success">📄 CV actuel</div>
+                <div class="text-xs text-muted">
+                  ${escapeHtml(profile.cv_original_name)}
+                </div>
+              </div>
+              <span class="badge-status badge-approved">✅ Téléchargé</span>
+            </div>`
+                : `
+            <div class="d-flex justify-between align-center p-3"
+              style="background:var(--warning-bg);border-radius:10px;
+              border:1px solid var(--warning-border);">
+              <div class="fw-bold text-small" style="color:var(--warning);">
+                ⚠️ Aucun CV téléchargé
+              </div>
+              <a href="student-dashboard.html" class="btn btn-navy btn-sm">
                 Télécharger
-              </a>`
-                : ""
+              </a>
+            </div>`
             }
-          </div>`
+          `
+              : ""
           }
         </div>
       `;

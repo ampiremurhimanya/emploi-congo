@@ -32,7 +32,24 @@
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Mot de passe</label>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 0.4rem;
+            "
+          >
+            <label class="form-label" style="margin-bottom: 0"
+              >Mot de passe</label
+            >
+            <a
+              href="forgot-password.html"
+              style="font-size: 0.85rem; color: var(--navy); font-weight: 600"
+            >
+              Mot de passe oublié ?
+            </a>
+          </div>
           <input
             type="password"
             id="password"
@@ -66,13 +83,6 @@
             En créer un
           </a>
         </p>
-
-        <div class="demo-box">
-          <strong>Comptes de démonstration :</strong>
-          Admin : admin@emploicongo.cd / Admin@2024<br />
-          Étudiant : etudiant@unikin.ac.cd / Student@123<br />
-          Entreprise : rh@vodacom.cd / Company@123
-        </div>
       </div>
     </div>
 
@@ -116,7 +126,7 @@
           showToast(
             "Connexion réussie ! Bienvenue " +
               data.fullName.split(" ")[0] +
-              " 👋",
+              " ",
           );
           const dashMap = {
             STUDENT: "student-dashboard.html",

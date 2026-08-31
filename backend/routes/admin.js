@@ -12,6 +12,7 @@ router.get('/dashboard', requireAuth, requireRole('ADMIN'), async (req, res) => 
     const students = await pool.query(`SELECT COUNT(*) FROM users WHERE role = 'STUDENT'`);
     const companies = await pool.query(`SELECT COUNT(*) FROM users WHERE role = 'COMPANY'`);
     const total = await pool.query(`SELECT COUNT(*) FROM users`);
+
     res.json({
       pendingApprovals: parseInt(pending.rows[0].count),
       activeOpportunities: parseInt(active.rows[0].count),
@@ -30,6 +31,7 @@ router.get('/opportunities/pending', requireAuth, requireRole('ADMIN'), async (r
     const result = await pool.query(
       `SELECT * FROM opportunities WHERE status = 'PENDING' ORDER BY created_at ASC`
     );
+
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
@@ -41,8 +43,10 @@ router.patch('/opportunities/:id/approve', requireAuth, requireRole('ADMIN'), as
   try {
     const result = await pool.query(
       `UPDATE opportunities SET status = 'APPROVED', approved_at = NOW()
-       WHERE id = $1 RETURNING *`, [req.params.id]
+       WHERE id = $1 RETURNING *`,
+      [req.params.id]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
@@ -53,10 +57,13 @@ router.patch('/opportunities/:id/approve', requireAuth, requireRole('ADMIN'), as
 router.patch('/opportunities/:id/reject', requireAuth, requireRole('ADMIN'), async (req, res) => {
   try {
     const { reason } = req.body;
+
     const result = await pool.query(
       `UPDATE opportunities SET status = 'REJECTED', rejection_reason = $1
-       WHERE id = $2 RETURNING *`, [reason || null, req.params.id]
+       WHERE id = $2 RETURNING *`,
+      [reason || null, req.params.id]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
@@ -66,17 +73,40 @@ router.patch('/opportunities/:id/reject', requireAuth, requireRole('ADMIN'), asy
 // ===== INTERNAL POST (admin posts directly, auto-approved) =====
 router.post('/opportunities/internal', requireAuth, requireRole('ADMIN'), async (req, res) => {
   try {
-    const { title, companyName, field, description, location, employmentType, salaryRange, applicationDeadline } = req.body;
+    const {
+      title,
+      companyName,
+      field,
+      description,
+      location,
+      employmentType,
+      salaryRange,
+      applicationDeadline
+    } = req.body;
+
     if (!title || !companyName || !field) {
-      return res.status(400).json({ message: 'Titre, société et domaine sont obligatoires.' });
+      return res.status(400).json({
+        message: 'Titre, société et domaine sont obligatoires.'
+      });
     }
+
     const result = await pool.query(`
       INSERT INTO opportunities
         (title, company_name, field, description, location, employment_type,
          salary_range, application_deadline, status, internal_post, verified_company, approved_at)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'APPROVED',true,true,NOW())
       RETURNING *
-    `, [title, companyName, field, description, location, employmentType, salaryRange, applicationDeadline || null]);
+    `, [
+      title,
+      companyName,
+      field,
+      description,
+      location,
+      employmentType,
+      salaryRange,
+      applicationDeadline || null
+    ]);
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
@@ -87,21 +117,35 @@ router.post('/opportunities/internal', requireAuth, requireRole('ADMIN'), async 
 router.get('/users', requireAuth, requireRole('ADMIN'), async (req, res) => {
   try {
     const { role, search, page = 0, size = 20 } = req.query;
+
     const offset = page * size;
     const conditions = [];
     const params = [];
     let i = 1;
 
-    if (role) { conditions.push(`role = $${i}`); params.push(role); i++; }
+    if (role) {
+      conditions.push(`role = $${i}`);
+      params.push(role);
+      i++;
+    }
+
     if (search) {
-      conditions.push(`(LOWER(full_name) LIKE $${i} OR LOWER(email) LIKE $${i} OR LOWER(COALESCE(company_name,'')) LIKE $${i})`);
+      conditions.push(
+        `(LOWER(full_name) LIKE $${i} OR LOWER(email) LIKE $${i} OR LOWER(COALESCE(company_name,'')) LIKE $${i})`
+      );
       params.push(`%${search.toLowerCase()}%`);
       i++;
     }
 
-    const where = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    const where = conditions.length > 0
+      ? 'WHERE ' + conditions.join(' AND ')
+      : '';
 
-    const countResult = await pool.query(`SELECT COUNT(*) FROM users ${where}`, params);
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM users ${where}`,
+      params
+    );
+
     params.push(parseInt(size));
     params.push(parseInt(offset));
 
@@ -110,7 +154,7 @@ router.get('/users', requireAuth, requireRole('ADMIN'), async (req, res) => {
              account_active, created_at
       FROM users ${where}
       ORDER BY created_at DESC
-      LIMIT $${i} OFFSET $${i+1}
+      LIMIT $${i} OFFSET $${i + 1}
     `, params);
 
     res.json({
@@ -128,9 +172,12 @@ router.get('/users', requireAuth, requireRole('ADMIN'), async (req, res) => {
 router.patch('/users/:id/toggle-active', requireAuth, requireRole('ADMIN'), async (req, res) => {
   try {
     const result = await pool.query(
-      `UPDATE users SET account_active = NOT account_active WHERE id = $1
-       RETURNING id, full_name, email, role, account_active`, [req.params.id]
+      `UPDATE users SET account_active = NOT account_active
+       WHERE id = $1
+       RETURNING id, full_name, email, role, account_active`,
+      [req.params.id]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
@@ -141,12 +188,71 @@ router.patch('/users/:id/toggle-active', requireAuth, requireRole('ADMIN'), asyn
 router.patch('/users/:id/verify-company', requireAuth, requireRole('ADMIN'), async (req, res) => {
   try {
     const result = await pool.query(
-      `UPDATE users SET verified_company = true WHERE id = $1 AND role = 'COMPANY'
-       RETURNING id, full_name, email, role, verified_company`, [req.params.id]
+      `UPDATE users SET verified_company = true
+       WHERE id = $1 AND role = 'COMPANY'
+       RETURNING id, full_name, email, role, verified_company`,
+      [req.params.id]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+// ===== CHANGE PASSWORD (admin) =====
+router.post('/change-password', requireAuth, requireRole('ADMIN'), async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        message: 'Les deux champs sont obligatoires.'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message: 'Le nouveau mot de passe doit contenir au moins 6 caractères.'
+      });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        message: 'Le nouveau mot de passe doit être différent de l\'ancien.'
+      });
+    }
+
+    const result = await pool.query(
+      'SELECT password FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    const valid = await bcrypt.compare(
+      currentPassword,
+      result.rows[0].password
+    );
+
+    if (!valid) {
+      return res.status(400).json({
+        message: 'Mot de passe actuel incorrect.'
+      });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await pool.query(
+      'UPDATE users SET password = $1 WHERE id = $2',
+      [hashed, req.user.userId]
+    );
+
+    res.json({
+      message: 'Mot de passe modifié avec succès.'
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Erreur serveur.'
+    });
   }
 });
 
