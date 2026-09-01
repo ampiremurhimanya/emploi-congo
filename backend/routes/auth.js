@@ -10,7 +10,6 @@ const rateLimit = require('express-rate-limit');
 
 require('dotenv').config();
 
-// ── Resend email ──────────────────────────────────────────────
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
@@ -31,7 +30,6 @@ function emailEnabled() {
   return process.env.MAIL_ENABLED === 'true' && !!process.env.RESEND_API_KEY;
 }
 
-// ── Rate limiters ─────────────────────────────────────────────
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
@@ -49,19 +47,18 @@ router.get('/test-email', async (req, res) => {
   try {
     if (!emailEnabled()) {
       return res.status(400).json({
-        message: '❌ Email désactivé. Vérifiez MAIL_ENABLED et RESEND_API_KEY dans .env'
+        message: 'Email désactivé. Vérifiez MAIL_ENABLED et RESEND_API_KEY dans .env'
       });
     }
     await sendEmail(
       'ampireguillaume4@gmail.com',
-      '✅ Test Email EmploiCongo',
-      `<h2>✅ Email fonctionne !</h2>
-       <p>Votre configuration Resend est correcte.</p>`
+      'Test Email EmploiCongo',
+      '<h2>Email fonctionne !</h2><p>Votre configuration Resend est correcte.</p>'
     );
-    res.json({ message: '✅ Email envoyé ! Vérifiez votre boîte mail.' });
+    res.json({ message: 'Email envoyé ! Vérifiez votre boîte mail.' });
   } catch (err) {
     console.error('Test email error:', err.message);
-    res.status(500).json({ message: '❌ Échec: ' + err.message });
+    res.status(500).json({ message: 'Echec: ' + err.message });
   }
 });
 
@@ -104,23 +101,24 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const result = await pool.query(`
-      INSERT INTO users (
+    const result = await pool.query(
+      `INSERT INTO users (
         full_name, email, password, role,
         field_of_study, degree_program,
         company_name, company_website, company_description
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-      RETURNING id, full_name, email, role
-    `, [
-      fullName.trim(),
-      email.toLowerCase().trim(),
-      hashedPassword, role,
-      fieldOfStudy || null,
-      degreeProgram || null,
-      companyName || null,
-      companyWebsite || null,
-      companyDescription || null
-    ]);
+      RETURNING id, full_name, email, role`,
+      [
+        fullName.trim(),
+        email.toLowerCase().trim(),
+        hashedPassword, role,
+        fieldOfStudy || null,
+        degreeProgram || null,
+        companyName || null,
+        companyWebsite || null,
+        companyDescription || null
+      ]
+    );
 
     const user = result.rows[0];
     const token = jwt.sign(
@@ -129,37 +127,25 @@ router.post('/register', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Send welcome email (best effort — don't block registration)
     if (emailEnabled()) {
       sendEmail(
         user.email,
         'Bienvenue sur EmploiCongo !',
-        `
-        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
-          <div style="background:#0d1e3d;padding:24px;text-align:center;
-            border-radius:12px 12px 0 0;">
-            <h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>
-          </div>
-          <div style="background:#fff;padding:32px;border:1px solid #e2e8f0;
-            border-radius:0 0 12px 12px;">
-            <h2 style="color:#0d1e3d;">Bienvenue, ${user.full_name} ! 🎉</h2>
-            <p style="color:#374151;line-height:1.7;">
-              Votre compte a été créé avec succès sur EmploiCongo,
-              la plateforme qui connecte les talents congolais avec
-              les meilleures opportunités.
-            </p>
-            <ul style="color:#374151;line-height:2.2;">
-              <li>Parcourir des centaines d'offres d'emploi et de stages</li>
-              <li>Télécharger votre CV et postuler en un clic</li>
-              <li>Suivre vos candidatures en temps réel</li>
-            </ul>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
-            <p style="color:#94a3b8;font-size:0.82rem;text-align:center;">
-              © 2026 EmploiCongo. Tous droits réservés.
-            </p>
-          </div>
-        </div>
-        `
+        '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">'
+        + '<div style="background:#0d1e3d;padding:24px;text-align:center;border-radius:12px 12px 0 0;">'
+        + '<h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>'
+        + '</div>'
+        + '<div style="background:#fff;padding:32px;border:1px solid #e2e8f0;border-radius:0 0 12px 12px;">'
+        + '<h2 style="color:#0d1e3d;">Bienvenue, ' + user.full_name + ' !</h2>'
+        + '<p style="color:#374151;line-height:1.7;">Votre compte a été créé avec succès sur EmploiCongo.</p>'
+        + '<ul style="color:#374151;line-height:2.2;">'
+        + '<li>Parcourir des centaines d offres d emploi et de stages</li>'
+        + '<li>Télécharger votre CV et postuler en un clic</li>'
+        + '<li>Suivre vos candidatures en temps réel</li>'
+        + '</ul>'
+        + '<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">'
+        + '<p style="color:#94a3b8;font-size:0.82rem;text-align:center;">2026 EmploiCongo. Tous droits réservés.</p>'
+        + '</div></div>'
       ).catch(err => console.error('Welcome email error:', err.message));
     }
 
@@ -192,24 +178,20 @@ router.post('/login', loginLimiter, async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({
-        message: 'Email ou mot de passe incorrect.'
-      });
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
     }
 
     const user = result.rows[0];
 
     if (!user.account_active) {
       return res.status(403).json({
-        message: 'Ce compte a été suspendu. Contactez l\'administration.'
+        message: 'Ce compte a été suspendu. Contactez l administration.'
       });
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({
-        message: 'Email ou mot de passe incorrect.'
-      });
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
     }
 
     const token = jwt.sign(
@@ -244,116 +226,81 @@ router.post('/forgot-password', forgotLimiter, async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT id, full_name, email FROM users
-       WHERE email = $1 AND account_active = true`,
+      'SELECT id, full_name, email FROM users WHERE email = $1 AND account_active = true',
       [email.toLowerCase().trim()]
     );
 
-    // Always return generic message when email not found
-    // This prevents attackers from knowing which emails are registered
     if (result.rows.length === 0) {
       return res.json({
-        message: `Si l'adresse ${email} est enregistrée, un code a été envoyé. Vérifiez votre boîte mail et vos spams.`,
+        message: 'Si cet email est enregistré, un code a été envoyé. Vérifiez votre boîte mail.',
         emailSent: false
       });
     }
 
     const user = result.rows[0];
 
-    // Delete old tokens
     await pool.query(
       'DELETE FROM password_reset_tokens WHERE user_id = $1',
       [user.id]
     );
 
-    // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedCode = await bcrypt.hash(code, 10);
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     await pool.query(
-      `INSERT INTO password_reset_tokens (user_id, token, expires_at)
-       VALUES ($1, $2, $3)`,
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
       [user.id, hashedCode, expiresAt]
     );
 
-    // Always log to server terminal for debugging
-    console.log(`🔑 [SERVER] Reset code for ${user.email}: ${code}`);
+    console.log('[SERVER] Reset code for ' + user.email + ': ' + code);
 
     if (emailEnabled()) {
-  // Respond immediately — don't make user wait for email
-  res.json({
-    message: `Un code a été envoyé à ${email}. Vérifiez votre boîte mail et vos spams. Le code expire dans 30 minutes.`,
-    emailSent: true
-  });
-
-  // Send email in background after responding
-  sendEmail(
-    user.email,
-    'Code de réinitialisation — EmploiCongo',
-    `
-    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
-      <div style="background:#0d1e3d;padding:24px;text-align:center;
-        border-radius:12px 12px 0 0;">
-        <h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>
-      </div>
-      <div style="background:#fff;padding:32px;border:1px solid #e2e8f0;
-        border-radius:0 0 12px 12px;">
-        <h2 style="color:#0d1e3d;">Réinitialisation du mot de passe</h2>
-        <p style="color:#374151;">
-          Bonjour <strong>${user.full_name}</strong>,
-        </p>
-        <p style="color:#374151;line-height:1.7;">
-          Voici votre code de vérification :
-        </p>
-        <div style="background:#f3f6fb;border-radius:14px;padding:32px;
-          text-align:center;margin:28px 0;">
-          <p style="color:#64748b;font-size:0.85rem;margin:0 0 12px;
-            font-weight:600;letter-spacing:0.05em;">
-            CODE DE VÉRIFICATION
-          </p>
-          <div style="font-size:3rem;font-weight:900;
-            letter-spacing:0.6rem;color:#0d1e3d;
-            background:#fff;display:inline-block;
-            padding:20px 40px;border-radius:12px;
-            border:2px solid #e2e8f0;">
-            ${code}
-          </div>
-          <p style="color:#64748b;font-size:0.82rem;margin:16px 0 0;">
-            ⏱️ Ce code expire dans <strong>30 minutes</strong>
-          </p>
-        </div>
-        <div style="background:#fef3c7;border:1px solid #fcd34d;
-          border-radius:10px;padding:14px;margin-bottom:24px;">
-          <p style="color:#b45309;margin:0;font-size:0.88rem;">
-            ⚠️ Si vous n'avez pas demandé cette réinitialisation,
-            ignorez cet email.
-          </p>
-        </div>
-        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
-        <p style="color:#94a3b8;font-size:0.82rem;text-align:center;">
-          © 2026 EmploiCongo. Tous droits réservés.
-        </p>
-      </div>
-    </div>
-    `
-  ).then(() => {
-    console.log(`✅ Reset email delivered to: ${user.email}`);
-  }).catch(err => {
-    console.error(`❌ Email failed for ${user.email}:`, err.message);
-  });
-
-  return; // Already responded above
-}
-
-    } else {
-      // Email disabled (dev mode) — return code directly
-      return res.json({
-        message: 'Mode développement — email désactivé.',
-        code: code,
-        emailSent: false
+      // Respond immediately — do not wait for email
+      res.json({
+        message: 'Un code a été envoyé à ' + email + '. Vérifiez votre boîte mail et vos spams. Le code expire dans 30 minutes.',
+        emailSent: true
       });
+
+      // Send email in background
+      sendEmail(
+        user.email,
+        'Code de réinitialisation — EmploiCongo',
+        '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">'
+        + '<div style="background:#0d1e3d;padding:24px;text-align:center;border-radius:12px 12px 0 0;">'
+        + '<h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>'
+        + '</div>'
+        + '<div style="background:#fff;padding:32px;border:1px solid #e2e8f0;border-radius:0 0 12px 12px;">'
+        + '<h2 style="color:#0d1e3d;">Réinitialisation du mot de passe</h2>'
+        + '<p style="color:#374151;">Bonjour ' + user.full_name + ',</p>'
+        + '<p style="color:#374151;line-height:1.7;">Voici votre code de vérification :</p>'
+        + '<div style="background:#f3f6fb;border-radius:14px;padding:32px;text-align:center;margin:28px 0;">'
+        + '<p style="color:#64748b;font-size:0.85rem;margin:0 0 12px;font-weight:600;letter-spacing:0.05em;">CODE DE VÉRIFICATION</p>'
+        + '<div style="font-size:3rem;font-weight:900;letter-spacing:0.6rem;color:#0d1e3d;background:#fff;display:inline-block;padding:20px 40px;border-radius:12px;border:2px solid #e2e8f0;">'
+        + code
+        + '</div>'
+        + '<p style="color:#64748b;font-size:0.82rem;margin:16px 0 0;">Ce code expire dans <strong>30 minutes</strong></p>'
+        + '</div>'
+        + '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:14px;margin-bottom:24px;">'
+        + '<p style="color:#b45309;margin:0;font-size:0.88rem;">Si vous n avez pas demandé cette réinitialisation, ignorez cet email.</p>'
+        + '</div>'
+        + '<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">'
+        + '<p style="color:#94a3b8;font-size:0.82rem;text-align:center;">2026 EmploiCongo. Tous droits réservés.</p>'
+        + '</div></div>'
+      ).then(() => {
+        console.log('Reset email delivered to: ' + user.email);
+      }).catch(err => {
+        console.error('Email failed for ' + user.email + ': ' + err.message);
+      });
+
+      return;
     }
+
+    return res.json({
+      message: 'Mode développement.',
+      code: code,
+      emailSent: false
+    });
 
   } catch (err) {
     console.error('Forgot password error:', err.message);
@@ -378,14 +325,10 @@ router.post('/verify-reset-code', async (req, res) => {
       return res.status(400).json({ message: 'Code invalide ou expiré.' });
     }
 
-    const tokenResult = await pool.query(`
-      SELECT * FROM password_reset_tokens
-      WHERE user_id = $1
-        AND expires_at > NOW()
-        AND used = false
-      ORDER BY created_at DESC
-      LIMIT 1
-    `, [user.rows[0].id]);
+    const tokenResult = await pool.query(
+      'SELECT * FROM password_reset_tokens WHERE user_id = $1 AND expires_at > NOW() AND used = false ORDER BY created_at DESC LIMIT 1',
+      [user.rows[0].id]
+    );
 
     if (!tokenResult.rows.length) {
       return res.status(400).json({
@@ -393,14 +336,9 @@ router.post('/verify-reset-code', async (req, res) => {
       });
     }
 
-    const valid = await bcrypt.compare(
-      code.toString(),
-      tokenResult.rows[0].token
-    );
+    const valid = await bcrypt.compare(code.toString(), tokenResult.rows[0].token);
     if (!valid) {
-      return res.status(400).json({
-        message: 'Code incorrect. Vérifiez et réessayez.'
-      });
+      return res.status(400).json({ message: 'Code incorrect. Vérifiez et réessayez.' });
     }
 
     res.json({ message: 'Code vérifié avec succès.' });
@@ -426,22 +364,17 @@ router.post('/reset-password', async (req, res) => {
     }
 
     const user = await pool.query(
-      `SELECT id, full_name, email FROM users
-       WHERE email = $1 AND account_active = true`,
+      'SELECT id, full_name, email FROM users WHERE email = $1 AND account_active = true',
       [email.toLowerCase().trim()]
     );
     if (!user.rows.length) {
       return res.status(400).json({ message: 'Code invalide ou expiré.' });
     }
 
-    const tokenResult = await pool.query(`
-      SELECT * FROM password_reset_tokens
-      WHERE user_id = $1
-        AND expires_at > NOW()
-        AND used = false
-      ORDER BY created_at DESC
-      LIMIT 1
-    `, [user.rows[0].id]);
+    const tokenResult = await pool.query(
+      'SELECT * FROM password_reset_tokens WHERE user_id = $1 AND expires_at > NOW() AND used = false ORDER BY created_at DESC LIMIT 1',
+      [user.rows[0].id]
+    );
 
     if (!tokenResult.rows.length) {
       return res.status(400).json({
@@ -449,10 +382,7 @@ router.post('/reset-password', async (req, res) => {
       });
     }
 
-    const valid = await bcrypt.compare(
-      code.toString(),
-      tokenResult.rows[0].token
-    );
+    const valid = await bcrypt.compare(code.toString(), tokenResult.rows[0].token);
     if (!valid) {
       return res.status(400).json({ message: 'Code incorrect.' });
     }
@@ -468,41 +398,24 @@ router.post('/reset-password', async (req, res) => {
       [tokenResult.rows[0].id]
     );
 
-    // Send confirmation email (best effort)
     if (emailEnabled()) {
       sendEmail(
         user.rows[0].email,
         'Mot de passe modifié — EmploiCongo',
-        `
-        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
-          <div style="background:#0d1e3d;padding:24px;text-align:center;
-            border-radius:12px 12px 0 0;">
-            <h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>
-          </div>
-          <div style="background:#fff;padding:32px;border:1px solid #e2e8f0;
-            border-radius:0 0 12px 12px;">
-            <h2 style="color:#15803d;">✅ Mot de passe modifié</h2>
-            <p style="color:#374151;">
-              Bonjour <strong>${user.rows[0].full_name}</strong>,
-            </p>
-            <p style="color:#374151;line-height:1.7;">
-              Votre mot de passe EmploiCongo a été réinitialisé avec succès.
-            </p>
-            <div style="background:#dcfce7;border:1px solid #86efac;
-              border-radius:10px;padding:14px;margin:20px 0;">
-              <p style="color:#15803d;margin:0;font-size:0.88rem;">
-                🔒 Si vous n'avez pas effectué cette modification,
-                contactez-nous immédiatement à
-                <strong>contact@emploicongo.cd</strong>
-              </p>
-            </div>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
-            <p style="color:#94a3b8;font-size:0.82rem;text-align:center;">
-              © 2026 EmploiCongo. Tous droits réservés.
-            </p>
-          </div>
-        </div>
-        `
+        '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">'
+        + '<div style="background:#0d1e3d;padding:24px;text-align:center;border-radius:12px 12px 0 0;">'
+        + '<h1 style="color:#f5c842;margin:0;font-size:1.8rem;">EmploiCongo</h1>'
+        + '</div>'
+        + '<div style="background:#fff;padding:32px;border:1px solid #e2e8f0;border-radius:0 0 12px 12px;">'
+        + '<h2 style="color:#15803d;">Mot de passe modifié</h2>'
+        + '<p style="color:#374151;">Bonjour ' + user.rows[0].full_name + ',</p>'
+        + '<p style="color:#374151;line-height:1.7;">Votre mot de passe EmploiCongo a été réinitialisé avec succès.</p>'
+        + '<div style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:14px;margin:20px 0;">'
+        + '<p style="color:#15803d;margin:0;font-size:0.88rem;">Si vous n avez pas effectué cette modification, contactez-nous à contact@emploicongo.cd</p>'
+        + '</div>'
+        + '<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">'
+        + '<p style="color:#94a3b8;font-size:0.82rem;text-align:center;">2026 EmploiCongo. Tous droits réservés.</p>'
+        + '</div></div>'
       ).catch(err => console.error('Confirmation email error:', err.message));
     }
 
